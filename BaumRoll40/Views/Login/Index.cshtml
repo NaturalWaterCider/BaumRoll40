@@ -1,0 +1,115 @@
+﻿@model BaumRoll40.Models.LoginViewModel
+
+@*<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <a class="navbar-brand" href="#">ひろば</a>
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#Navber" aria-controls="Navber" aria-expanded="false" aria-label="ナビゲーションの切替">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>*@
+
+<div class="container pb-5">
+    <h5 class="ml-3">ろぐいんしてね</h5>
+    <p class="text-black-50 ml-3">はじめての方へ：初期ぱすはいつものです</p>
+
+    @* コメント箇所はBootstrap4デフォルト入力検証で使用するもの *@
+    @using (Html.BeginForm("Index", "Login", FormMethod.Post, new {@*@class = "needs-validation", @novalidate = "novalidate"*@ id = "loginForm"}))
+    {
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal col-md-6">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.UserId, htmlAttributes: new { @class = "control-label col" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.UserId, new { htmlAttributes = new { @class = "form-control col-6" } })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PassWord, htmlAttributes: new { @class = "control-label col" })
+                <div class="col-md-10">
+                    @Html.PasswordFor(model => model.PassWord, new { @class = "form-control col-6" })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <input type="submit" value="ログイン" class="btn btn-primary" />
+            </div>
+        </div>
+
+    </div>
+}
+
+
+</div>
+
+
+@section Scripts{
+
+    <script type="text/javascript">
+        //Bootstrap4　デフォルトの入力検証実験！
+        // 無効なフィールドがある場合にフォーム送信を無効にするスターターJavaScriptの例
+        //(function () {
+        //    'use strict';
+
+        //    window.addEventListener('load', function () {
+        //        // カスタムブートストラップ検証スタイルを適用するすべてのフォームを取得
+        //        var forms = document.getElementsByClassName('needs-validation');
+        //        // ループして帰順を防ぐ
+        //        var validation = Array.prototype.filter.call(forms, function (form) {
+        //            form.addEventListener('submit', function (event) {
+        //                if (form.checkValidity() === false) {
+        //                    event.preventDefault();
+        //                    event.stopPropagation();
+        //                }
+        //                form.classList.add('was-validated');
+        //            }, false);
+        //        });
+        //    }, false);
+        //})();
+
+        //BootstrapValidator利用　入力検証実験！
+        $(document).ready(function () {
+            $('#loginForm').bootstrapValidator({
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    UserId: {
+                        message: 'The username is not valid',
+                        validators: {
+                            notEmpty: {
+                                message: '入力必須です！<br>'
+                            },
+                            stringLength: {
+                                min: 0,
+                                max: 8,
+                                message: '8桁以内にしてください！<br>'
+                            },
+                            regexp: {
+                                regexp: /^[0-9]+$/,
+                                message: '数字のみ入力可能です！<br>'
+                            }
+                        }
+                    },
+                    PassWord: {
+                        message: 'The password is not valid',
+                        validators: {
+                            notEmpty: {
+                                message: '入力必須です！<br>'
+                            },
+                            stringLength: {
+                                min: 0,
+                                max: 20,
+                                message: '20桁以内にしてください！<br>'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

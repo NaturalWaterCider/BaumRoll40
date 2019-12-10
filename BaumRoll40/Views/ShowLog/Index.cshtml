@@ -1,0 +1,42 @@
+﻿@model BaumRoll40.Models.ShowLogViewModel
+
+<div class="container">
+    <h5>ろぐ</h5>
+    <hr />
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <p class="mt-4 mb-2">日付を指定してね</p>
+            <div class="row mx-auto mb-4">
+                @Html.EditorFor(model => model.StrLogDate, new { htmlAttributes = new { @class = "form-control col-4 datepicker" } })
+                <button type="submit" name="Display" class="btn btn-success ml-2">表示</button>
+            </div>
+        }
+        <div>
+            <p>@Html.Raw(Model.LogContent.Replace("\n", "<br />"))</p>
+        </div>
+
+    </div>
+
+@section Css {
+    <link href="@Url.Content("~/Content/bootstrap-datepicker.css")" rel="stylesheet" type="text/css" />
+}
+
+
+@section Scripts{
+    <script src="@Url.Content("~/Scripts/bootstrap-datepicker.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/bootstrap-datepicker.ja.js")" type="text/javascript"></script>
+    <script>
+
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd', 
+            language: 'ja',       // カレンダー日本語化のため
+            minViewMode: 0,     //1にすると月表示になる
+            autoclose: true,
+            todayHighlight: true// 今日の日付をハイライト
+
+        });
+
+    </script>
+}

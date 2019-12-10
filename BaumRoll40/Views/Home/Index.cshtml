@@ -1,0 +1,406 @@
+﻿@model BaumRoll40.Models.PostViewModel
+
+
+<!-- せっかくなのでソース読んで面白いようにしたいなって思うのです -->
+<!-- 本体だよ -->
+<div class="container mt-3">
+    @* 通知 *@
+    <!-- localhostでしか使いませんたぶん -->
+    <form id="foo">
+        <div class="col ml-1 mb-2">
+            <button type="button" id="switchButton" class="btn btn-sm btn-secondary">通知OFFなう</button>
+            <input type="hidden" id="pushFlag" value="0" />
+            <label id="lumondeIce" for="lumonde" class="btn btn-sm btn-secondary mb-0 mx-1">
+                <img src="~/Content/i.png" height="18" width="18" class="p-0" />
+                <input type="file" id="lumonde" name="lumonde" accept="image/*" />
+            </label>
+            <span id="outputLumonde"></span>
+        </div>
+
+        @* 投稿送信 *@
+        <div class="form-inline ml-1 mb-3">
+            <div class="form-group col-10">
+                <textarea id="message" class="form-control col" maxlength="200" rows="3"></textarea>
+            </div>
+            <input type="button" id="sendmessage" value="送信" class="btn btn-primary ml-2" />
+        </div>
+
+        <input type="hidden" id="displayname" value="@Model.UserName" />
+        <input type="hidden" id="showSearchWord" value="@Model.SearchWord" />
+    </form>
+    @* 投稿一覧 *@
+    <ul id="discussion" class="list-group list-group-flush ml-0">
+        @using System;
+        @using System.Text.RegularExpressions;
+        @if (Model.PostList != null)
+        {
+            foreach (var item in Model.PostList)
+            {
+                string content = "";
+                if (!string.IsNullOrEmpty(item.Content))
+                {
+                    content = HttpUtility.HtmlEncode(item.Content);
+                }
+                <li class="list-group-item">
+                    <strong>@item.UserName</strong>:&nbsp;&nbsp;<span name="msg">@Html.Raw(content.Replace("\n", "<br/>"))</span> @*@item.Content*@
+                    <br />
+                    @if (item.PictureId != null)
+                    {
+                        <img src="/Images/show/@item.PictureId" class="col-8 mt-1 pl-0" onclick="shadowBox(@item.PictureId);" /><br />
+                    }
+                    <small class="text-secondary">@item.PostTime</small>
+                </li>
+            }
+        }
+    </ul>
+
+    <nav aria-label="もきゅ">
+        <ul class="pagination justify-content-center my-4">
+            <li class="page-item">@Html.ActionLink("«", "Index", "Home", new { id = 1 }, new { @class = "page-link bg-white text-success bg-light" })</li>
+            @for (int i = 1; i <= Model.AllPageNo; i++)
+            {
+                int pageSt = Model.PageNo - 5;
+                int pageEd = Model.PageNo + 5;
+                if (pageSt < i && i <= pageEd)
+                {
+                    if (i == Model.PageNo)
+                    {
+                        <li class="page-item">@Html.ActionLink(i.ToString(), "Index", "Home", new { id = i }, new { @class = "page-link font-weight-bolder bg-white text-success bg-light" })</li>
+                    }
+                    else
+                    {
+                        <li class="page-item">@Html.ActionLink(i.ToString(), "Index", "Home", new { id = i }, new { @class = "page-link bg-white text-success bg-light" })</li>
+                    }
+                }
+            }
+            <li class="page-item">@Html.ActionLink("»", "Index", "Home", new { id = Model.AllPageNo }, new { @class = "page-link bg-white text-success bg-light" })</li>
+        </ul>
+    </nav>
+</div>
+
+<!-- 検索モーダルを出すよ -->
+<div class="modal" id="SearchModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">検索</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div><!-- /.modal-header -->
+            <div class="modal-body">
+
+                    <div class="form-inline my-2 row mx-3">
+                        <input type="text" id="inputSearchWord" class="form-control w-50" placeholder="検索..." />
+                        <button type="button" id="SearchButton" class="btn btn-success my-2 ml-2">検索</button>
+                    </div>
+
+                <div id="SearchResult" class="mb-3"></div>
+
+            </div><!-- /.modal-body -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+            </div><!-- /.modal-footer -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@* 厚くて焼き立てなトーストとか食べたい *@
+
+<div id="ShadowBoxResult"></div>
+
+@section Css{
+    @*<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">*@
+    <style>
+        /* なにこれ */
+        label input {
+            display: none;
+        }
+    </style>
+}
+
+@section Scripts{
+
+    @*<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <script src="~/Scripts/marked.js"></script>*@
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.7/push.min.js"></script>
+    <script type="text/javascript">
+
+        //末尾に[\w\-_@@/~?%$&=+#]を入れるべきか迷う
+        const httpRegExp = /(https?:\/\/[\w.\-_@@:/~?%$&;=+#',()*!]+[\w\-_@@/~?%$&=+()#])/g; 
+
+        //通知　有無の設定をするんだと思う
+        //実際の通知作成は鯖らんどで
+        var OneSignal = window.OneSignal || [];
+        OneSignal.push(function () {
+            OneSignal.init({
+                appId: "0d1aeef6-4c31-438b-9b18-b2fcf9fd9b8c",
+                notifyButton: {
+                    enable: true,
+                },
+            });
+        });
+        OneSignal.push(['sendTag', 'customId', @User.Identity.Name, function (tagsSent) { }]); // ここ追加
+
+        //おいしくなって新登場
+        $(function () {
+            $("li#signout").before('<li class="nav-item ml-2 active"><a class="nav-link" href="#" data-toggle="modal" data-target="#SearchModal">検索</a></li>');
+        })
+
+        //我ながらなんて読みづらいんだろうと思う
+        $(function () {
+            //simpleMDE
+            //var simplemde = new SimpleMDE({
+            //    element: document.getElementById("message"),
+            //    forceSync: true,
+            //    spellChecker: false,
+            //    lineWrapping: false
+            //});
+
+            //いんぐりっしゅいっぱい
+            // Declare a proxy to reference the hub.
+            var chat = $.connection.chatHub;
+
+            // がんばって受信する
+            chat.client.broadcastMessage = function (name, message, time, picId) {
+                // Html encode display name and message.
+                var encodedName = $('<div />').text(name).html();
+                //var encodedMsg = $('<div />').text(message).html();
+                var encodedTime = $('<div />').text(time).html();
+
+                encodedMsg = $('<div />').text(message).html().replace(httpRegExp, makeLinkTag);
+
+                // Add the message to the page.
+                //だぶるこーとだと一箇所しか置換されないの(´･ω･`)
+                var pendMsg = '<li class="list-group-item"><strong>' + encodedName
+                    + '</strong>:&nbsp;&nbsp;' + encodedMsg.replace(/\n/g, "<br/>");
+
+                if (picId != null && picId >= 1) {
+                    pendMsg += '<br /><img src="/Images/show/' + picId + '" class="col-8 mt-1 pl-0" onclick="shadowBox(' + picId + ');" /><br />';
+                }
+
+                pendMsg += '<br /><small class="text-secondary">' + encodedTime + '</small></li>';
+
+                $('#discussion').prepend(pendMsg);
+
+                //自分以外の投稿の場合通知
+                if (name != $('#displayname').val()) {
+
+                    var pushflag = $('#pushFlag').val();
+
+                    //通知がONの時は通知を送信する
+                    if (pushflag == "1") {
+                        //Push.js(自分用)
+                        Push.create("", {
+                            body: " ",
+                        });
+
+                    }
+                }
+
+                console.log("broadcast できたよ name:" + name + " msg:" + message);
+            };
+
+            // Set initial focus to message input box.
+            $('#message').focus();
+
+            // がんばって送信する
+            $.connection.hub.start().done(function () {
+
+                $('#message').keydown(function (e) {
+                    //ctrlキーが押されてる状態か判定
+                    if (event.ctrlKey) {
+                        //押されたキー（e.keyCode）が13（Enter）か　そしてテキストエリアに何かが入力されているか判定
+                        if (e.keyCode === 13) {
+                            //フォームを送信
+                            $("#sendmessage").trigger("click");
+                            $('#message').val('').focus();
+                        }
+                    }
+                });
+
+                $('#sendmessage').click(function () {
+                    var message = $('#message').val();
+                    var data = $('#lumonde').prop('files')[0];
+                    $('#lumonde').val(null);
+
+                    $.ajax({
+                        url: '/images/create',
+                        type: 'post',
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: data,
+                    })
+                        .done(function (id) {
+                            console.log("あっぷろど できたよ");
+
+                            // Call the Send method on the hub.
+                            chat.server.sendMessage($('#displayname').val(), message, id);
+                            console.log("send できたよ name:" + $('#displayname').val() + " msg:" + message);
+
+                            // Clear text box and reset focus for next comment.
+                            $('#message').val('').focus();
+                            $('#outputLumonde').html("");
+
+                            //$('#results').prepend('<img src="/images/show/' + o + '">');
+                        })
+                        .fail(function (xhr, status, err) {
+                            console.log("あっぷろど できないよ");
+                            console.log("xhr:" + xhr);
+                            console.log("status:" + status);
+                            console.log("err:" + err);
+                            return false;
+                        })
+                });
+            });
+
+            //ローカル用　通知切替え
+            $('#switchButton').on('click', function () {
+                var pushflag = $('#pushFlag').val();
+
+                if (pushflag == "0") {
+                    //通知ONに設定
+                    $('#pushFlag').val("1");
+                    $('#switchButton').removeClass("btn-secondary");
+                    $('#switchButton').addClass("btn-success");
+                    $('#switchButton').text("通知ONなう");
+                }
+                else {
+                    //通知OFFに設定
+                    $('#pushFlag').val("0");
+                    $('#switchButton').removeClass("btn-success");
+                    $('#switchButton').addClass("btn-secondary");
+                    $('#switchButton').text("通知OFFなう");
+                }
+            });
+
+            //まーくだうんの表示
+            //var elements = document.getElementsByName("msg");
+
+            //elements.forEach(e =>
+            //    e.innerHTML = marked(e.innerHTML)
+            //);
+
+
+            //検索　結果は部分ビュー
+            $('#SearchButton').on('click', function() {
+
+                var searchWord = escapeHTML($('#inputSearchWord').val());
+
+                if (searchWord == "") {
+                    $('#SearchResult').html('<p class="ml-3">検索条件を入力してね　</p>');
+                }
+                else {
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Content("~/Home/Search")',
+                        data: {
+                            searchWord: searchWord
+                        },
+                        dataType: 'html'
+                    })
+                    .done(function (data) {
+                        $('#SearchResult').html(data);
+                        $('#searchList').html($('#searchList').html().replace(httpRegExp, makeLinkTag));
+                    })
+                    .fail(function () {
+                        $('#SearchResult').html('<p class="ml-3">エラーです　管理者に教えてあげると喜びます　</p>');
+                    })
+                }
+            });
+
+        });
+
+        //自動リンク化
+        $(function() {
+            var str;
+            str = $('#discussion').html().replace(httpRegExp, makeLinkTag);
+            $('#discussion').html(str);
+        });
+
+        $('#SearchResult').on('change', function () {
+        });
+
+        //aタグ作るよ！(｀・ω・´)
+        function makeLinkTag($1) {
+            if ($1.match(document.domain)) {
+                // ドメインが同じ場合は同じウィンドウ
+                return '<a href="' + $1 + '">' + decodeURI($1) + '</a>';
+            } else {
+                // ドメインが異なる場合は別ウィンドウ
+                return '<a href="' + $1 + '" target="_blank">' + decodeURI($1) + '</a>';
+            }
+        }
+
+        $('#lumonde').on('change', function () {
+            $('#outputLumonde').html($(this)[0].files[0].name);
+        })
+
+        /**
+         * file登録
+         * @@param requestUrl
+         * @@param methodType
+         * @@param data
+         */
+        function uploadFile(requestUrl, methodType, data) {
+            return $.ajax({
+                url: requestUrl,
+                type: methodType,
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: data,
+                success: function (id) {
+                    //$('#results').prepend('<img src="/images/show/' + o + '">');
+                    console.log("あっぷろど できたよ");
+                    return id;
+                },
+                error: function (xhr, status, err) {
+                    console.log("あっぷろど できないよ");
+                    console.log("xhr:" + xhr);
+                    console.log("status:" + status);
+                    console.log("err:" + err);
+                    return false;
+                }
+            });
+        };
+
+        //画像拡大
+        //エラー処理がむずい　しばらく様子見
+        function shadowBox(id) {
+
+            if (isNaN(id)) {
+                alert("ばーか(´・д・｀)");
+                return false;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/ShadowBox")',
+                data: {
+                    id:id
+                },
+                dataType: 'html'
+            })
+            .done(function (data) {
+                $('#ShadowBoxResult').html(data);
+                $('#ShadowModal').modal('show');
+            })
+            .fail(function () {
+                alert("あーほ(´・д・｀)");
+            })
+        }
+
+        
+        function escapeHTML(str) {
+            str = str.replace(/&/g, '＆');
+            str = str.replace(/</g, '＜');
+            str = str.replace(/>/g, '＞');
+            str = str.replace(/"/g, '”');
+            str = str.replace(/'/g, '’');
+            return str;
+        }
+    </script>
+
+}

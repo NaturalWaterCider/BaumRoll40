@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <setParameter name="IIS Web Application Name" value="Default Web Site/BaumRoll40_deploy" />
+  <setParameter name="BaumRollEntities-Web.config Connection String" value="metadata=res://*/Models.BauRolls.csdl|res://*/Models.BauRolls.ssdl|res://*/Models.BauRolls.msl;provider=System.Data.SqlClient;provider connection string=&quot;Data Source=NSS400104\SQLEXPRESS;Initial Catalog=BaumRoll;Persist Security Info=True;User ID=sa;Password=1Boso6491;Application Name=EntityFramework&quot;" />
+</parameters>

@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @using System.Web.Optimization
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ぱふぃんのもり</title>
+    @Styles.Render("~/Content/css")
+    <link href="~/Content/bootstrapValidator.css" rel="stylesheet" />
+    <link rel="manifest" href="/manifest.json">
+    @*@Scripts.Render("~/bundles/modernizr")*@
+</head>
+<body style="padding-top:4.5rem;">
+    <!-- なびげーしょんばー -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <a class="navbar-brand" href="#">ひろば</a>
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#Navber" aria-controls="Navber" aria-expanded="false" aria-label="ナビゲーションの切替">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="collapse navbar-collapse" id="Navber">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item ml-2">
+                        <span class="navbar-text text-secondary" id="loginUser">ログインユーザー：&nbsp;&nbsp; <span class="sr-only">(現位置)</span></span>
+                    </li>
+                    <li class="nav-item ml-2 active">
+                        @Html.ActionLink("Home", "Index", "Home", new { id = 1 }, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item ml-2 active">
+                        @Html.ActionLink("Info", "Index", new { Controller = "Info" }, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item ml-2 active">
+                        @Html.ActionLink("ログ", "Index", new { Controller = "ShowLog" }, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item ml-2 active">
+                        @Html.ActionLink("お問い合わせ", "SendClaim", new { Controller = "Claim" }, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item ml-2 active">
+                        @Html.ActionLink("設定変更", "Index", new { Controller = "User" }, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item ml-2 active" id="signout">
+                        @Html.ActionLink("ログアウト", "SignOut", new { Controller = "Login" }, new { @class = "nav-link" })
+                    </li>
+                </ul>
+            </div>
+        }
+    </nav>
+
+    <br />
+    <section id="result" class="ml-3">
+        @if (!string.IsNullOrEmpty(ViewBag.ResultMsg))
+        {
+            <p class="text-success">@Html.Raw(@ViewBag.ResultMsg.Replace("\n", "<br/>"))</p>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMsg))
+        {
+            <p class="text-danger" id="ViewBag_ErrorMsg">@Html.Raw(@ViewBag.ErrorMsg.Replace("\n", "<br/>"))</p>
+        }
+    </section>
+
+    @RenderBody()
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script type="text/javascript" src="~/Scripts/bootstrapValidator.js"></script>
+    @RenderSection("css", required: false)
+    @RenderSection("scripts", required: false)
+
+    <!-- 以下の2行を追加 -->
+    <script src="~/Scripts/jquery.signalR-2.4.1.js"></script>
+    <script src="~/signalR/hubs"></script>
+    <script>
+        $(function () {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Content("~/User/GetUserName")',
+                data: {},
+                dataType: 'text'
+            })
+            .done(function (data) {
+                $('#loginUser').append(data);
+            })
+            .fail(function () {
+                //どうしましょう
+            })
+
+        })
+    </script>
+</body>
+</html>

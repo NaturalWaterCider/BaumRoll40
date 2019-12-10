@@ -1,0 +1,89 @@
+﻿@model BaumRoll40.Models.UserViewModel
+
+
+@using (Html.BeginForm("Index", "User", FormMethod.Post, new { id = "ChangePassForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal container mt-2">
+        <h5>パスワード変更</h5>
+        <p class="text-black-50">忘れたときの責任はとりません</p>
+
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.UserId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control col-6", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NewPassword1, htmlAttributes: new { @class = "control-label col" })
+            <div class="col-md-10">
+                @Html.PasswordFor(model => model.NewPassword1, new { @class = "form-control col-6", maxlength = "20" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NewPassword2, htmlAttributes: new { @class = "control-label col" })
+            <div class="col-md-10">
+                @Html.PasswordFor(model => model.NewPassword2, new { @class = "form-control col-6" })
+                @Html.ValidationMessageFor(model => model.NewPassword2, "", new { @class = "text-danger", maxlength = "20" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" id="send" value="保存" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+
+    <script type="text/javascript">
+        //BootstrapValidator利用
+        $(document).ready(function () {
+            $('#ChangePassForm').bootstrapValidator({
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    NewPassword1: {
+                        message: 'The password is not valid',
+                        validators: {
+                            notEmpty: {
+                                message: '入力必須です！<br>'
+                            },
+                            stringLength: {
+                                min: 0,
+                                max: 20,
+                                message: '20桁以内にしてください！<br>'
+                            }
+                        }
+                    },
+                    NewPassword2: {
+                        message: 'The password is not valid',
+                        validators: {
+                            notEmpty: {
+                                message: '入力必須です！<br>'
+                            },
+                            stringLength: {
+                                min: 0,
+                                max: 20,
+                                message: '20桁以内にしてください！<br>'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,31 @@
+﻿@model BaumRoll40.Models.SearchViewModel
+
+<p class="ml-3">検索ワード：@Model.SearchWord</p><br />
+@if (Model.SearchedPostList != null && Model.SearchedPostList.Count != 0)
+{
+    <ul id="searchList" class="list-group list-group-flush ml-0">
+    @foreach (var item in Model.SearchedPostList)
+    {
+        string content = "";
+        if (!string.IsNullOrEmpty(item.Content))
+        {
+            content = HttpUtility.HtmlEncode(item.Content);
+        }
+
+            <li class="list-group-item">
+                <strong>@item.UserName</strong>:&nbsp;&nbsp;@Html.Raw(content.Replace("\n", "<br/>"))
+                <br />
+                @if (item.PictureId != null)
+                {
+                    <img src="/Images/show/@item.PictureId" class="col-8 mt-1 pl-0" /><br />
+                }
+                <small class="text-secondary">@item.PostTime</small><br />
+                @Html.ActionLink("投稿へ移動", "Index", "Home", new { id = item.PageNo }, null)
+            </li>
+    }
+    </ul>
+}
+else
+{
+    <p class="ml-3">なにもみつからなかった…</p>
+}
