@@ -66,7 +66,7 @@ namespace BaumRoll40.Models
             }
             catch (WebException ex)
             {
-                logger.Error("Notificator.csにてエラー発生: " + ex.Message + ex.Status + ex.StackTrace);
+                logger.Error("Notificator.csにてエラー発生: " + ex.Message + ex.Status);
 
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());

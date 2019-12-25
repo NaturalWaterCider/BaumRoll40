@@ -45,6 +45,12 @@ namespace BaumRoll40.SignalR
                     name = db.Users.Where(u => u.UserId == userId).Select(u => u.UserName).FirstOrDefault();
                 }
 
+                var iconSrc = "/Content/Icon/" + userId + ".png";
+                if (!System.IO.File.Exists(HttpContext.Current.Server.MapPath(iconSrc)))
+                {
+                    iconSrc = "/Content/Icon/noicon-user.png";
+                }
+
                 Post post = MakePost(message, postId, userId, picId);
                 db.Post.Add(post);
 
@@ -52,12 +58,12 @@ namespace BaumRoll40.SignalR
                 {
                     db.SaveChanges();
 
-                    Clients.All.broadcastMessage(name, message, post.PostTime.ToString("yyyy/MM/dd HH:mm:ss"), picId);
+                    Clients.All.broadcastMessage(iconSrc, name, message, post.PostTime.ToString("yyyy/MM/dd HH:mm:ss"), picId);
                 }
                 catch (Exception ex)
                 {
-                    logger.Error("MyHub/SendMessage 投稿の登録に失敗： " + ex + "\nすたくとれす： " + ex.StackTrace + "\n内部例外： " + ex.InnerException);
-                    Clients.All.broadcastMessage(name, message + "\n[ERROR]登録エラー。再読込するとこの投稿は消えるかもしれません。再度投稿してみてください。", post.PostTime.ToString("yyyy/MM/dd HH:mm:ss"));
+                    logger.Error("MyHub/SendMessage 投稿の登録に失敗： " + ex + "\n内部例外： " + ex.InnerException);
+                    Clients.All.broadcastMessage(iconSrc, name, message + "\n[ERROR]登録エラー。再読込するとこの投稿は消えるかもしれません。再度投稿してみてください。", post.PostTime.ToString("yyyy/MM/dd HH:mm:ss"));
                 }
 
 
@@ -67,6 +73,7 @@ namespace BaumRoll40.SignalR
                     var AImessage = "";
                     var AIname = "";
                     var AIuserId = 0;
+                    var AIconSrc = "";
 
                     try
                     {
@@ -75,6 +82,7 @@ namespace BaumRoll40.SignalR
                         {
                             AIuserId = 917;
                             AIname = "賢治";
+                            AIconSrc = "/Content/Icon/" + AIuserId + ".png";
                             AImessage = TalkWithAI(message, kenji);
                         }
                         //キャラ子
@@ -82,6 +90,7 @@ namespace BaumRoll40.SignalR
                         {
                             AIuserId = 919;
                             AIname = "キャラメル";
+                            AIconSrc = "/Content/Icon/" + AIuserId + ".png";
                             AImessage = TalkWithAI(message, caramel);
                         }
                         //しょこら
@@ -89,6 +98,7 @@ namespace BaumRoll40.SignalR
                         {
                             AIuserId = 1024;
                             AIname = "しょこら";
+                            AIconSrc = "/Content/Icon/" + AIuserId + ".png";
                             AImessage = TalkWithAI(message, choco);
                         }
                         else
@@ -99,7 +109,7 @@ namespace BaumRoll40.SignalR
                     }
                     catch(Exception ex)
                     {
-                        logger.Error("MyHub/SendMessage/TalkWithAI ： " + ex + "\nすたくとれす： " + ex.StackTrace + "\n内部例外： " + ex.InnerException);
+                        logger.Error("MyHub/SendMessage/TalkWithAI ： " + ex + "\n内部例外： " + ex.InnerException);
                         AImessage = "[ERROR] APIとの通信中にエラーが発生しました。";
                     }
 
@@ -112,12 +122,12 @@ namespace BaumRoll40.SignalR
                     {
                         db.SaveChanges();
 
-                        Clients.All.broadcastMessage(AIname, AImessage, AIpost.PostTime.ToString("yyyy/MM/dd HH:mm:ss"));
+                        Clients.All.broadcastMessage(AIconSrc, AIname, AImessage, AIpost.PostTime.ToString("yyyy/MM/dd HH:mm:ss"));
                     }
                     catch (Exception ex)
                     {
-                        logger.Error("MyHub/SendMessage 投稿の登録に失敗： " + ex + "\nすたくとれす： " + ex.StackTrace + "\n内部例外： " + ex.InnerException);
-                        Clients.All.broadcastMessage(AIname, AImessage + "\n[ERROR] 登録エラー。再読込するとこの投稿は消えるかもしれません。再度投稿してみてください。", AIpost.PostTime.ToString("yyyy/MM/dd HH:mm:ss"));
+                        logger.Error("MyHub/SendMessage 投稿の登録に失敗： " + ex + "\n内部例外： " + ex.InnerException);
+                        Clients.All.broadcastMessage(AIconSrc, AIname, AImessage + "\n[ERROR] 登録エラー。再読込するとこの投稿は消えるかもしれません。再度投稿してみてください。", AIpost.PostTime.ToString("yyyy/MM/dd HH:mm:ss"));
                     }
 
 
@@ -151,7 +161,7 @@ namespace BaumRoll40.SignalR
         }
 
         /// <summary>
-        /// すぺしゃるさんくすつもりくん&わたなべくん
+        /// すぺしゃるさんくすつもりくんandわたなべくん
         /// AIとお話できる
         /// </summary>
         /// <param name="message"></param>
@@ -192,22 +202,5 @@ namespace BaumRoll40.SignalR
 
             return reply;
         }
-
-        //public void GetCountAndMessage(string msg)
-        //{
-        //    ProgressStart();
-        //    Clients.Caller.sendMessage(string.Format(msg), count);
-        //}
-
-        //private void ProgressStart()
-        //{
-        //    Task.Run(() => {
-        //        for (int i = 1; i <= 100; i++)
-        //        {
-        //            Thread.Sleep(500);
-        //            SendMessage("処理中...", i);
-        //        }
-        //    });
-        //}
     }
 }

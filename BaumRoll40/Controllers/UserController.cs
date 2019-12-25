@@ -1,7 +1,9 @@
 ﻿using BaumRoll40.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -72,6 +74,36 @@ namespace BaumRoll40.Controllers
             return RedirectToAction("Index", new { userid = user.UserId });
         }
 
+        public ActionResult ChangeIcon()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ChangeIcon(string id)
+        {
+            try
+            {
+                HttpPostedFileBase iconFile = Request.Files["lubera"];
+
+                if (iconFile != null && iconFile.ContentType != "" && iconFile.ContentType.Contains("image/"))
+                {
+                    //ファイルアップロード
+                    var upIconFilePath = ConfigurationManager.AppSettings["iconFolder"] + "\\" + User.Identity.Name + ".png";
+                    iconFile.SaveAs(upIconFilePath);
+                    HttpResponse.RemoveOutputCacheItem("/Home/Index/");
+                    ViewBag.ResultMsg = string.Format("アイコン画像が登録できた！よ！");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("ChangeIcon 画像登録失敗 by" + User.Identity.Name + "：" + ex);
+                ViewBag.ErrorMsg = string.Format("アイコン画像が登録できなかった！よ！");
+            }
+
+            return View();
+        }
+
         /// <summary>
         /// ajax前提　ユーザー名取得
         /// </summary>
@@ -84,5 +116,6 @@ namespace BaumRoll40.Controllers
 
             return Content(userName);
         }
+
     }
 }

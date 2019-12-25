@@ -112,15 +112,17 @@ namespace BaumRoll40.Controllers
             {
                 var port = int.Parse(ConfigurationManager.AppSettings["port"]);
                 var host = ConfigurationManager.AppSettings["host"];
-                var userName = ConfigurationManager.AppSettings["userName"];
-                var password = ConfigurationManager.AppSettings["password"];
+
+                //まさかの認証なしで送れる
+                //var userName = ConfigurationManager.AppSettings["userName"];
+                //var password = ConfigurationManager.AppSettings["password"];
 
                 //client.Connect(host, port);
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
                 client.Connect(host, port, MailKit.Security.SecureSocketOptions.Auto);
 
-                client.Authenticate(userName, password);
+                //client.Authenticate(userName, password);
 
                 client.Send(message);
 

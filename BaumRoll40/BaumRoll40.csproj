@@ -173,6 +173,8 @@
     <Content Include="Content\bootstrapValidator.css" />
     <Content Include="Content\bootswatch.css" />
     <Content Include="Content\i.png" />
+    <Content Include="Content\Icon\19320515.png" />
+    <Content Include="Content\Icon\noicon-user.png" />
     <Content Include="Content\icon_inputfile.png" />
     <Content Include="Content\icon_inputfile2.png" />
     <Content Include="Content\simplemde.css" />
@@ -393,6 +395,7 @@
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Home\ShadowBox.cshtml" />
     <Content Include="Views\ShowLog\Index.cshtml" />
+    <Content Include="Views\User\ChangeIcon.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

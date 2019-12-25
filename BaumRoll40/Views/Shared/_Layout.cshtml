@@ -38,7 +38,15 @@
                         @Html.ActionLink("お問い合わせ", "SendClaim", new { Controller = "Claim" }, new { @class = "nav-link" })
                     </li>
                     <li class="nav-item ml-2 active">
-                        @Html.ActionLink("設定変更", "Index", new { Controller = "User" }, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item dropdown ml-2 active">
+                        <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            設定変更
+                        </a>
+                        <div class="dropdown-menu bg-primary border-0" aria-labelledby="navbarDropdown">
+                            @Html.ActionLink("アイコン変更", "ChangeIcon", new { Controller = "User" }, new { @class = "dropdown-item text-light small" })
+                            @Html.ActionLink("パスワード変更", "Index", new { Controller = "User" }, new { @class = "dropdown-item text-light small" })
+                        </div>
                     </li>
                     <li class="nav-item ml-2 active" id="signout">
                         @Html.ActionLink("ログアウト", "SignOut", new { Controller = "Login" }, new { @class = "nav-link" })

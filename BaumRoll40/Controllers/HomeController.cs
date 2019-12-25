@@ -91,7 +91,7 @@ namespace BaumRoll40.Controllers
             }
             catch (Exception ex)
             {
-                logger.Info("Home/Searchにてエラー : " + ex + ex.StackTrace);
+                logger.Info("Home/Searchにてエラー : " + ex);
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
             }
 
@@ -193,6 +193,19 @@ namespace BaumRoll40.Controllers
 
             ViewBag.ErrorMsg = errorMsg;
             return PartialView(picture);
+        }
+
+        public ActionResult SearchFile(string path)
+        {
+            if (System.IO.File.Exists(Server.MapPath(path)))
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+
         }
     }
 }

@@ -29,7 +29,7 @@
         <input type="hidden" id="showSearchWord" value="@Model.SearchWord" />
     </form>
     @* 投稿一覧 *@
-    <ul id="discussion" class="list-group list-group-flush ml-0">
+    <dl id="discussion" class="ml-0">
         @using System;
         @using System.Text.RegularExpressions;
         @if (Model.PostList != null)
@@ -41,18 +41,33 @@
                 {
                     content = HttpUtility.HtmlEncode(item.Content);
                 }
-                <li class="list-group-item">
-                    <strong>@item.UserName</strong>:&nbsp;&nbsp;<span name="msg">@Html.Raw(content.Replace("\n", "<br/>"))</span> @*@item.Content*@
-                    <br />
-                    @if (item.PictureId != null)
-                    {
-                        <img src="/Images/show/@item.PictureId" class="col-8 mt-1 pl-0" onclick="shadowBox(@item.PictureId);" /><br />
-                    }
-                    <small class="text-secondary">@item.PostTime</small>
-                </li>
+                <dd class="row mx-auto border-top pt-2">
+                    <div class="mt-2 ml-2 mr-1">
+                        @{
+                            var iconSrc = "/Content/Icon/" + item.UserId + ".png";
+                            if (File.Exists(Server.MapPath(iconSrc)))
+                            {
+                                <img src="@iconSrc" height="33" width="33" class="p-0 rounded" /><br />
+                            }
+                            else
+                            {
+                                <img src="~/Content/Icon/noicon-user.png" height="33" width="33" class="p-0 rounded" /><br />
+                            }
+                        }
+                    </div>
+                    <div class="col-10 mb-1">
+                        <small class="font-weight-bold">@item.UserName</small>&nbsp;&nbsp;<small class="text-secondary">@item.PostTime</small><br />
+                        <span name="msg">@Html.Raw(content.Replace("\n", "<br/>"))</span> @*@item.Content*@
+                        @if (item.PictureId != null)
+                        {
+                            <br />
+                            <img src="/Images/show/@item.PictureId" class="col-8 mt-1 pl-0" onclick="shadowBox(@item.PictureId);" /><br />
+                        }
+                    </div>
+                </dd>
             }
         }
-    </ul>
+    </dl>
 
     <nav aria-label="もきゅ">
         <ul class="pagination justify-content-center my-4">
@@ -162,24 +177,27 @@
             var chat = $.connection.chatHub;
 
             // がんばって受信する
-            chat.client.broadcastMessage = function (name, message, time, picId) {
+            chat.client.broadcastMessage = function (iconSrc, name, message, time, picId) {
                 // Html encode display name and message.
                 var encodedName = $('<div />').text(name).html();
                 //var encodedMsg = $('<div />').text(message).html();
                 var encodedTime = $('<div />').text(time).html();
 
-                encodedMsg = $('<div />').text(message).html().replace(httpRegExp, makeLinkTag);
+                var encodedMsg = $('<div />').text(message).html().replace(httpRegExp, makeLinkTag);
 
                 // Add the message to the page.
                 //だぶるこーとだと一箇所しか置換されないの(´･ω･`)
-                var pendMsg = '<li class="list-group-item"><strong>' + encodedName
-                    + '</strong>:&nbsp;&nbsp;' + encodedMsg.replace(/\n/g, "<br/>");
+                var pendMsg = '<dd class="row mx-auto border-top pt-2">' +
+                    '<div class="mt-2 ml-2 mr-1"><img src="' + iconSrc + '" height="33" width="33" class="p-0 rounded" /><br /></div>' +
+                    '<div class="col-10 mb-1">' +
+                    '<small class="font-weight-bold">' + encodedName + '</small>&nbsp;&nbsp;' + '<small class="text-secondary">' + encodedTime + '</small><br />' +
+                    '<span name="msg">' + encodedMsg.replace(/\n/g, "<br/>") + '</span>';
 
                 if (picId != null && picId >= 1) {
                     pendMsg += '<br /><img src="/Images/show/' + picId + '" class="col-8 mt-1 pl-0" onclick="shadowBox(' + picId + ');" /><br />';
                 }
 
-                pendMsg += '<br /><small class="text-secondary">' + encodedTime + '</small></li>';
+                pendMsg += '</div></dd>';
 
                 $('#discussion').prepend(pendMsg);
 
@@ -223,35 +241,38 @@
                     var message = $('#message').val();
                     var data = $('#lumonde').prop('files')[0];
                     $('#lumonde').val(null);
+                    //教えてもらったやり方だと何入れても送信できなくなってしまった　なんでだろう
+                    if (message || data) {
 
-                    $.ajax({
-                        url: '/images/create',
-                        type: 'post',
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        data: data,
-                    })
-                        .done(function (id) {
-                            console.log("あっぷろど できたよ");
-
-                            // Call the Send method on the hub.
-                            chat.server.sendMessage($('#displayname').val(), message, id);
-                            console.log("send できたよ name:" + $('#displayname').val() + " msg:" + message);
-
-                            // Clear text box and reset focus for next comment.
-                            $('#message').val('').focus();
-                            $('#outputLumonde').html("");
-
-                            //$('#results').prepend('<img src="/images/show/' + o + '">');
+                        $.ajax({
+                            url: '/images/create',
+                            type: 'post',
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            data: data,
                         })
-                        .fail(function (xhr, status, err) {
-                            console.log("あっぷろど できないよ");
-                            console.log("xhr:" + xhr);
-                            console.log("status:" + status);
-                            console.log("err:" + err);
-                            return false;
-                        })
+                            .done(function (id) {
+                                console.log("あっぷろど できたよ");
+
+                                // Call the Send method on the hub.
+                                chat.server.sendMessage($('#displayname').val(), message, id);
+                                console.log("send できたよ name:" + $('#displayname').val() + " msg:" + message);
+
+                                // Clear text box and reset focus for next comment.
+                                $('#message').val('').focus();
+                                $('#outputLumonde').html("");
+
+                                //$('#results').prepend('<img src="/images/show/' + o + '">');
+                            })
+                            .fail(function (xhr, status, err) {
+                                console.log("あっぷろど できないよ");
+                                console.log("xhr:" + xhr);
+                                console.log("status:" + status);
+                                console.log("err:" + err);
+                                return false;
+                            })
+                    }
                 });
             });
 
