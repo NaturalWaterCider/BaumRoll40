@@ -172,6 +172,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrapValidator.css" />
     <Content Include="Content\bootswatch.css" />
+    <Content Include="Content\bootswatch_darkly.css" />
     <Content Include="Content\i.png" />
     <Content Include="Content\Icon\19320515.png" />
     <Content Include="Content\Icon\noicon-user.png" />

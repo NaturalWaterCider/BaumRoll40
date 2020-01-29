@@ -19,6 +19,8 @@ namespace BaumRoll40.App_Start
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootswatch.css"));
 
+            bundles.Add(new StyleBundle("~/Content/css_dark").Include(
+                      "~/Content/bootswatch_darkly.css"));
         }
 
     }
