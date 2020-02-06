@@ -38,6 +38,7 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="DarkFlag" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="FK_Post_Picture">
           <End Role="Picture" Type="Self.Picture" Multiplicity="0..1" />
@@ -83,6 +84,7 @@
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DarkFlag" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityContainer Name="BaumRollEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Post" EntityType="Self.Post" />
@@ -143,6 +145,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="BaumRollModel.Users">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="DarkFlag" ColumnName="DarkFlag" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Password" ColumnName="Password" />

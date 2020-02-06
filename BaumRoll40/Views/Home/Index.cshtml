@@ -56,7 +56,7 @@
                         }
                     </div>
                     <div class="col-10 mb-1">
-                        <small class="font-weight-bold">@item.UserName</small>&nbsp;&nbsp;<small class="text-secondary">@item.PostTime</small><br />
+                        <small class="font-weight-bold">@item.UserName</small>&nbsp;&nbsp;<small class="text-muted">@item.PostTime</small><br />
                         <span name="msg" id="msg" style="white-space:pre-wrap;">@Html.Raw(content)</span>
                         @if (item.PictureId != null)
                         {
@@ -159,7 +159,7 @@
 
         //おいしくなって新登場
         $(function () {
-            $("li#signout").before('<li class="nav-item ml-2 active"><a class="nav-link" href="#" data-toggle="modal" data-target="#SearchModal">検索</a></li>');
+            $("li#signout").before('<li class="nav-item ml-2"><a class="nav-link" href="#" data-toggle="modal" data-target="#SearchModal">検索</a></li>');
         })
 
         //我ながらなんて読みづらいんだろうと思う
@@ -189,7 +189,7 @@
                 var pendMsg = '<dd class="row mx-auto border-top pt-2">' +
                     '<div class="mt-2 ml-2 mr-1"><img src="' + iconSrc + '" height="33" width="33" class="p-0 rounded" /><br /></div>' +
                     '<div class="col-10 mb-1">' +
-                    '<small class="font-weight-bold">' + encodedName + '</small>&nbsp;&nbsp;' + '<small class="text-secondary">' + encodedTime + '</small><br />' +
+                    '<small class="font-weight-bold">' + encodedName + '</small>&nbsp;&nbsp;' + '<small class="text-muted">' + encodedTime + '</small><br />' +
                     '<span name="msg" id="msg" style="white-space:pre-wrap;">' + encodedMsg + '</span>';
 
                 if (picId != null && picId >= 1) {

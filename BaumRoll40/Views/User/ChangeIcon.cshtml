@@ -5,7 +5,7 @@
 
     <div class="form-horizontal container mt-2">
         <h5>アイコン変更</h5>
-        <p class="text-black-50">画面がシンプルすぎてつらい</p>
+        <p class="text-muted">画面がシンプルすぎてつらい</p>
 
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -16,7 +16,7 @@
                     <input type="file" class="custom-file-input" id="lubera" name="lubera" accept="image/*" required />
                     <label class="custom-file-label" for="lubera" id="outputLubera"><span class="small">画像を選んでね！！</span></label>
                 </div>
-                <input type="submit" id="send" value="保存" class="btn btn-primary ml-3" style="height: calc(1.3em + 0.75rem + 2px);" />
+                <input type="submit" id="send" value="保存" class="btn btn-primary ml-3"  />
             </div>
         </div>
     </div>
@@ -30,8 +30,6 @@
 
         .custom-file-label::after {
             content: "参照";
-            font-size: small;
-            height: calc(1.5em + 0.75rem);
         }
     </style>
 }

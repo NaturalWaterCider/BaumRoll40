@@ -349,6 +349,7 @@
     </Compile>
     <Compile Include="Models\ClaimViewModel.cs" />
     <Compile Include="Models\CustomMembershipProvider.cs" />
+    <Compile Include="Models\DarkmodeModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\Notificator.cs" />

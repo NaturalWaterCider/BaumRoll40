@@ -19,7 +19,7 @@
                 {
                     <img src="/Images/show/@item.PictureId" class="col-8 mt-1 pl-0" /><br />
                 }
-                <small class="text-secondary">@item.PostTime</small><br />
+                <small class="text-muted">@item.PostTime</small><br />
                 @Html.ActionLink("投稿へ移動", "Index", "Home", new { id = item.PageNo }, null)
             </li>
     }

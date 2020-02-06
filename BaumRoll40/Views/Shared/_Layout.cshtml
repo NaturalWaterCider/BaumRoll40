@@ -6,7 +6,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ぱふぃんのもり</title>
-    @Styles.Render("~/Content/css")
+
+    @{
+        var darkmodeModel = new BaumRoll40.Models.DarkmodeModel();
+        bool isDark = darkmodeModel.IsDarkmode(User.Identity.Name);
+
+        if (isDark)
+        {
+            @Styles.Render("~/Content/css_dark")
+        }
+        else
+        {
+            @Styles.Render("~/Content/css")
+        }
+    }
+
     <link href="~/Content/bootstrapValidator.css" rel="stylesheet" />
     <link rel="manifest" href="/manifest.json">
     @*@Scripts.Render("~/bundles/modernizr")*@
@@ -23,32 +37,40 @@
             <div class="collapse navbar-collapse" id="Navber">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item ml-2">
-                        <span class="navbar-text text-secondary" id="loginUser">ログインユーザー：&nbsp;&nbsp; <span class="sr-only">(現位置)</span></span>
+                        <span class="navbar-text text-muted" id="loginUser">ログインユーザー：&nbsp;&nbsp; <span class="sr-only">(現位置)</span></span>
                     </li>
                     <li class="nav-item ml-2 active">
                         @Html.ActionLink("Home", "Index", "Home", new { id = 1 }, new { @class = "nav-link" })
                     </li>
-                    <li class="nav-item ml-2 active">
+                    <li class="nav-item ml-2">
                         @Html.ActionLink("Info", "Index", new { Controller = "Info" }, new { @class = "nav-link" })
                     </li>
-                    <li class="nav-item ml-2 active">
+                    <li class="nav-item ml-2">
                         @Html.ActionLink("ログ", "Index", new { Controller = "ShowLog" }, new { @class = "nav-link" })
                     </li>
-                    <li class="nav-item ml-2 active">
+                    <li class="nav-item ml-2">
                         @Html.ActionLink("お問い合わせ", "SendClaim", new { Controller = "Claim" }, new { @class = "nav-link" })
                     </li>
-                    <li class="nav-item ml-2 active">
+                    <li class="nav-item ml-2">
                     </li>
-                    <li class="nav-item dropdown ml-2 active">
+                    <li class="nav-item dropdown ml-2">
                         <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             設定変更
                         </a>
                         <div class="dropdown-menu bg-primary border-0" aria-labelledby="navbarDropdown">
                             @Html.ActionLink("アイコン変更", "ChangeIcon", new { Controller = "User" }, new { @class = "dropdown-item text-light small" })
                             @Html.ActionLink("パスワード変更", "Index", new { Controller = "User" }, new { @class = "dropdown-item text-light small" })
+                            @if (isDark)
+                            {
+                                @Html.ActionLink("おはよう", "ChangeMode", new { Controller = "User" }, new { @class = "dropdown-item text-light small" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("おやすみ", "ChangeMode", new { Controller = "User" }, new { @class = "dropdown-item text-light small" })
+                            }
                         </div>
                     </li>
-                    <li class="nav-item ml-2 active" id="signout">
+                    <li class="nav-item ml-2" id="signout">
                         @Html.ActionLink("ログアウト", "SignOut", new { Controller = "Login" }, new { @class = "nav-link" })
                     </li>
                 </ul>
