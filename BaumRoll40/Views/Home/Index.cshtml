@@ -57,7 +57,7 @@
                     </div>
                     <div class="col-10 mb-1">
                         <small class="font-weight-bold">@item.UserName</small>&nbsp;&nbsp;<small class="text-secondary">@item.PostTime</small><br />
-                        <span name="msg">@Html.Raw(content.Replace("\n", "<br/>").Replace(" ", "&nbsp;"))</span> @*@item.Content*@
+                        <span name="msg" style="white-space:pre-wrap">@Html.Raw(content.Replace("\n", "<br/>"))</span> @*@item.Content*@
                         @if (item.PictureId != null)
                         {
                             <br />
@@ -190,7 +190,7 @@
                     '<div class="mt-2 ml-2 mr-1"><img src="' + iconSrc + '" height="33" width="33" class="p-0 rounded" /><br /></div>' +
                     '<div class="col-10 mb-1">' +
                     '<small class="font-weight-bold">' + encodedName + '</small>&nbsp;&nbsp;' + '<small class="text-secondary">' + encodedTime + '</small><br />' +
-                    '<span name="msg">' + encodedMsg.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;") + '</span>';
+                    '<span name="msg" style="white-space:pre-wrap">' + encodedMsg.replace(/\n/g, "<br/>") + '</span>';
 
                 if (picId != null && picId >= 1) {
                     pendMsg += '<br /><img src="/Images/show/' + picId + '" class="col-8 mt-1 pl-0" onclick="shadowBox(' + picId + ');" /><br />';
