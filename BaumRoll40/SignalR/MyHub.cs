@@ -154,6 +154,11 @@ namespace BaumRoll40.SignalR
             if (db.Post.Count() > maxNum)
             {
                 var minPost = db.Post.Find(db.Post.Min(p => p.PostId));
+                //トランザクションいるかなぁ
+                if(minPost.PictureId != null)
+                {
+                    db.Picture.Remove(db.Picture.Find(minPost.PictureId));
+                }
                 db.Post.Remove(minPost);
             }
 
