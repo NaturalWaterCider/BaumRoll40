@@ -71,7 +71,7 @@
 
     <nav aria-label="もきゅ">
         <ul class="pagination justify-content-center my-4">
-            <li class="page-item">@Html.ActionLink("«", "Index", "Home", new { id = 1 }, new { @class = "page-link bg-white text-success bg-light" })</li>
+            <li class="page-item">@Html.ActionLink("«", "Index", "Home", new { id = 1 }, new { @class = "page-link text-success" })</li>
             @for (int i = 1; i <= Model.AllPageNo; i++)
             {
                 int pageSt = Model.PageNo - 5;
@@ -80,15 +80,15 @@
                 {
                     if (i == Model.PageNo)
                     {
-                        <li class="page-item">@Html.ActionLink(i.ToString(), "Index", "Home", new { id = i }, new { @class = "page-link font-weight-bolder bg-white text-success bg-light" })</li>
+                        <li class="page-item">@Html.ActionLink(i.ToString(), "Index", "Home", new { id = i }, new { @class = "page-link font-weight-bolder text-success" })</li>
                     }
                     else
                     {
-                        <li class="page-item">@Html.ActionLink(i.ToString(), "Index", "Home", new { id = i }, new { @class = "page-link bg-white text-success bg-light" })</li>
+                        <li class="page-item">@Html.ActionLink(i.ToString(), "Index", "Home", new { id = i }, new { @class = "page-link text-success" })</li>
                     }
                 }
             }
-            <li class="page-item">@Html.ActionLink("»", "Index", "Home", new { id = Model.AllPageNo }, new { @class = "page-link bg-white text-success bg-light" })</li>
+            <li class="page-item">@Html.ActionLink("»", "Index", "Home", new { id = Model.AllPageNo }, new { @class = "page-link text-success" })</li>
         </ul>
     </nav>
 </div>
@@ -107,7 +107,7 @@
 
                     <div class="form-inline my-2 row mx-3">
                         <input type="text" id="inputSearchWord" class="form-control w-50" placeholder="検索..." />
-                        <button type="button" id="SearchButton" class="btn btn-success my-2 ml-2">検索</button>
+                        <button type="button" id="SearchButton" class="btn btn-primary my-2 ml-2">検索</button>
                     </div>
 
                 <div id="SearchResult" class="mb-3"></div>
@@ -337,9 +337,6 @@
             var str;
             str = $('#discussion').html().replace(httpRegExp, makeLinkTag);
             $('#discussion').html(str);
-        });
-
-        $('#SearchResult').on('change', function () {
         });
 
         //aタグ作るよ！(｀・ω・´)

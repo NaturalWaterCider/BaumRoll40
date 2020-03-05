@@ -5172,7 +5172,7 @@ input[type="button"].btn-block {
   margin-left: 0;
   line-height: 1.25;
   color: #fff;
-  background-color: #18BC9C;
+  background-color: transparent;
   border: 0 solid transparent;
 }
 
@@ -5180,7 +5180,7 @@ input[type="button"].btn-block {
   z-index: 2;
   color: #fff;
   text-decoration: none;
-  background-color: #0f7864;
+  background-color: transparent;
   border-color: transparent;
 }
 

@@ -104,6 +104,31 @@ namespace BaumRoll40.Controllers
             return View();
         }
 
+        public ActionResult ChangeMode()
+        {
+            var id = int.Parse(User.Identity.Name);
+            var user = db.Users.Find(id);
+
+            if(user == null)
+            {
+                logger.Error("ChangeMode 失敗 by" + User.Identity.Name + "：ゆーざーが見つかりません。迷子です。");
+            }
+
+            user.DarkFlag = !user.DarkFlag;
+            db.Entry(user).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                logger.Error("ChangeMode 失敗 by" + User.Identity.Name + "：" + ex);
+            }
+
+            return RedirectToAction("Index", "Home", new { id = 1 });
+        }
+
         /// <summary>
         /// ajax前提　ユーザー名取得
         /// </summary>
