@@ -324,6 +324,7 @@
     <Compile Include="Controllers\ImagesController.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\SendMsgController.cs" />
     <Compile Include="Controllers\ShowLogController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
@@ -352,6 +353,7 @@
     <Compile Include="Models\DarkmodeModel.cs" />
     <Compile Include="Models\ImageModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
+    <Compile Include="Models\ManagePostModel.cs" />
     <Compile Include="Models\Notificator.cs" />
     <Compile Include="Models\Picture.cs">
       <DependentUpon>BauRolls.tt</DependentUpon>

@@ -12,7 +12,6 @@ namespace BaumRoll40.Models
     {
         private BaumRollEntities db = new BaumRollEntities();
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        const string ConnectionString = "data source=NSS400104\\SQLEXPRESS;initial catalog=BaumRoll;persist security info=True;user id=sa;password=1Boso6491;";
         public int Id;
 
         public ImageModel()

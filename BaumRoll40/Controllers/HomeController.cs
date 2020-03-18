@@ -101,6 +101,7 @@ namespace BaumRoll40.Controllers
         }
 
         //git 変更テスト
+        //↑このこめんとなに
 
         /// <summary>
         /// 投稿を全件取得
@@ -124,16 +125,7 @@ namespace BaumRoll40.Controllers
             var list = new List<Post>();
             query.ToList().ForEach(item =>
             {
-                Post post = new Post
-                {
-                    PostId = item.PostId,
-                    UserId = item.UserId,
-                    UserName = item.UserName,
-                    Content = item.Content,
-                    PostTime = item.PostTime,
-                    PictureId = item.PictureId
-                };
-
+                Post post = new Post(item.PostId,item.UserId, item.UserName, item.Content, item.PostTime, item.PictureId);
                 list.Add(post);
             });
 

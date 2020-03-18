@@ -12,6 +12,30 @@ namespace BaumRoll40.Models
         public string UserName { get; set; }
 
         public int PageNo { get; set; }
+
+        public Post()
+        {
+
+        }
+
+        public Post(string message, int postId, int userid, int? picId)
+        {
+            PostId = postId;
+            UserId = userid;
+            Content = message;
+            PictureId = picId;
+            PostTime = DateTime.Now;
+        }
+
+        public Post(int postId, int userid, string username, string message, DateTime posttime, int? picId)
+        {
+            PostId = postId;
+            UserId = userid;
+            UserName = username;
+            Content = message;
+            PictureId = picId;
+            PostTime = posttime;
+        }
     }
 
     public class PostMetadata
