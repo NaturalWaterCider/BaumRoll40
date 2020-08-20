@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -128,6 +129,61 @@ namespace BaumRoll40.Controllers
 
             return RedirectToAction("Index", "Home", new { id = 1 });
         }
+
+        /// <summary>
+        /// くりえいとあかうんと
+        /// 当面は自分用　気が向いたら権限とかいれて
+        /// 
+        /// ↑の理由につきエラーチェック甘め
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Crenata8Red()
+        {
+            if(User.Identity.Name != "4280")
+            {
+                logger.Error("わるいこ GET：" + User.Identity.Name);
+                return RedirectToAction("Index", "Home", new { id = 1 });
+            }
+
+            var viewModel = new UserViewModel();
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Crenata8Red(UserViewModel viewModel)
+        {
+            if (User.Identity.Name != "4280")
+            {
+                logger.Error("わるいこ POST：" + User.Identity.Name);
+                return RedirectToAction("Index", "Home", new { id = 1 });
+            }
+
+            if (viewModel.NewPassword1 != viewModel.NewPassword2)
+            {
+                //error
+                ViewBag.ErrorMsg = string.Format("パスワードが一致しません。");
+                return View(viewModel);
+            }
+
+            // パスワードをハッシュ化
+            string hash = membershipProvider.GeneratePasswordHash(viewModel.UserId.ToString(), viewModel.NewPassword1);
+
+            Users user = new Users
+            {
+                UserId = viewModel.UserId,
+                UserName = viewModel.UserName,
+                Password = hash,
+                DarkFlag = false
+            };
+
+            db.Users.Add(user);
+            //同時更新エラーは起きないはず
+            db.SaveChanges();
+
+            return RedirectToAction("Crenata8Red");
+        }
+
 
         /// <summary>
         /// ajax前提　ユーザー名取得

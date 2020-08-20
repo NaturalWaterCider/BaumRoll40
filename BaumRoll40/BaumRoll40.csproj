@@ -400,6 +400,7 @@
     <Content Include="Views\Home\ShadowBox.cshtml" />
     <Content Include="Views\ShowLog\Index.cshtml" />
     <Content Include="Views\User\ChangeIcon.cshtml" />
+    <Content Include="Views\User\Crenata8Red.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

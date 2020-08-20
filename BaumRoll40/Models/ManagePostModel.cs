@@ -2,6 +2,7 @@
 using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -156,7 +157,7 @@ namespace BaumRoll40.Models
         private string TalkWithAI(string message, string AIname)
         {
             string postData = message.Replace("@" + AIname + " ", "");
-            string url = (AIname == choco) ? "http://172.23.8.76/chat" : "http://54.238.95.64/chatbot/" + AIname;
+            string url = (AIname == choco) ? ConfigurationManager.AppSettings["wAddress"] : ConfigurationManager.AppSettings["tAddress"] + AIname;
 
             //POST送信する文字列を作成
             //バイト型配列に変換

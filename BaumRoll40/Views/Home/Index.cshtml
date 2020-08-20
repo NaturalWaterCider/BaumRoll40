@@ -17,6 +17,11 @@
             <span id="outputLumonde"></span>
         </div>
 
+        @* 画像プレビュー用 *@
+        <div class="col ml-1">
+            <img id="preview" class="w-25 mb-3" style="display: none;" />
+        </div>
+
         @* 投稿送信 *@
         <div class="form-inline ml-1 mb-3">
             <div class="form-group col-10">
@@ -28,6 +33,7 @@
         <input type="hidden" id="displayname" value="@Model.UserName" />
         <input type="hidden" id="showSearchWord" value="@Model.SearchWord" />
     </form>
+
     @* 投稿一覧 *@
     <dl id="discussion" class="ml-0">
         @using System;
@@ -190,7 +196,7 @@
                     '<div class="mt-2 ml-2 mr-1"><img src="' + iconSrc + '" height="33" width="33" class="p-0 rounded" /><br /></div>' +
                     '<div class="col-10 mb-1">' +
                     '<small class="font-weight-bold">' + encodedName + '</small>&nbsp;&nbsp;' + '<small class="text-secondary">' + encodedTime + '</small><br />' +
-                    '<span name="msg" style="white-space:pre-wrap">' + encodedMsg.replace(/\n/g, "<br/>") + '</span>';
+                    '<span name="msg" style="white-space:pre-wrap">' + encodedMsg + '</span>';
 
                 if (picId != null && picId >= 1) {
                     pendMsg += '<br /><img src="/Images/show/' + picId + '" class="col-8 mt-1 pl-0" onclick="shadowBox(' + picId + ');" /><br />';
@@ -261,6 +267,7 @@
                                 // Clear text box and reset focus for next comment.
                                 $('#message').val('').focus();
                                 $('#outputLumonde').html("");
+                                $('#preview').attr('src', '');
 
                                 //$('#results').prepend('<img src="/images/show/' + o + '">');
                             })
@@ -329,7 +336,6 @@
                     })
                 }
             });
-
         });
 
         //自動リンク化
@@ -351,37 +357,14 @@
         }
 
         $('#lumonde').on('change', function () {
-            $('#outputLumonde').html($(this)[0].files[0].name);
+            $('#outputLumonde').html($(this)[0].files[0].name + '<button type="button" class="btn btn-sm btn-secondary ml-1" id="cancelFile" onclick="cancelFileUpload()">取消</button>');
         })
 
-        /**
-         * file登録
-         * @@param requestUrl
-         * @@param methodType
-         * @@param data
-         */
-        function uploadFile(requestUrl, methodType, data) {
-            return $.ajax({
-                url: requestUrl,
-                type: methodType,
-                cache: false,
-                contentType: false,
-                processData: false,
-                data: data,
-                success: function (id) {
-                    //$('#results').prepend('<img src="/images/show/' + o + '">');
-                    console.log("あっぷろど できたよ");
-                    return id;
-                },
-                error: function (xhr, status, err) {
-                    console.log("あっぷろど できないよ");
-                    console.log("xhr:" + xhr);
-                    console.log("status:" + status);
-                    console.log("err:" + err);
-                    return false;
-                }
-            });
-        };
+        function cancelFileUpload() {
+            $('#lumonde').val(null);
+            $('#outputLumonde').html('');
+            $('#preview').attr('src', '');
+        }
 
         //画像拡大
         //エラー処理がむずい　しばらく様子見
@@ -417,6 +400,30 @@
             str = str.replace(/"/g, '”');
             str = str.replace(/'/g, '’');
             return str;
+        }
+
+        //プレビューを入れようかなと
+        //ほぼこぴぺ
+        document.getElementById("lumonde").addEventListener("change", selectedFile, false);
+
+        function selectedFile(event) {
+            let files = event.target.files || event.dataTransfer.files;
+            showImage(files[0]);
+        }
+
+        function showImage(imagedata) {
+            let file = imagedata;
+            let fileReader = new FileReader();
+
+            // 読み込み完了時の処理を追加
+            fileReader.onload = function () {
+                const url = this.result;
+                const image = document.getElementById("preview");
+                image.style.display = "block"; //　display:none;を上書き
+                image.src = url;
+            };
+            // ファイルの読み込み(Data URI Schemeの取得)
+            fileReader.readAsDataURL(file); //画像表示
         }
     </script>
 
