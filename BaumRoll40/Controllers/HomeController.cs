@@ -109,9 +109,13 @@ namespace BaumRoll40.Controllers
         /// <returns></returns>
         private List<Post> GetAllPostList()
         {
+            var userIdNum = int.Parse(User.Identity.Name);
+            //クエリ句きらい
             var query = from p in db.Post
-                        join u in db.Users
-                        on p.UserId equals u.UserId
+                        join u in db.Users on p.UserId equals u.UserId
+                        //左外部結合もどき
+                        join fcc in (from fc in db.Fav group fc by fc.PostId into g select new { PostId = g.Key, FavCount = g.Count().ToString() }) on p.PostId equals fcc.PostId into fccJoin
+                        from fj in fccJoin.DefaultIfEmpty()
                         select new
                         {
                             p.PostId,
@@ -119,13 +123,15 @@ namespace BaumRoll40.Controllers
                             u.UserName,
                             p.Content,
                             p.PostTime,
-                            p.PictureId
+                            p.PictureId,
+                            FavCount = !String.IsNullOrEmpty(fj.FavCount) ? fj.FavCount : "0",  //Count()でとるとintなのになぜかnullが入るらしくエラーになる…
+                            isfav = db.Fav.Any(x => x.PostId == p.PostId && x.UserId == userIdNum)
                         };
 
             var list = new List<Post>();
             query.ToList().ForEach(item =>
             {
-                Post post = new Post(item.PostId,item.UserId, item.UserName, item.Content, item.PostTime, item.PictureId);
+                Post post = new Post(item.PostId,item.UserId, item.UserName, item.Content, item.PostTime, item.PictureId, item.isfav, int.Parse(item.FavCount));
                 list.Add(post);
             });
 

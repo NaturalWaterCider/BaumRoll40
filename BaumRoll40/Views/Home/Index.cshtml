@@ -61,13 +61,24 @@
                             }
                         }
                     </div>
-                    <div class="col-10 mb-1">
+                    <div class="col mb-1 mr-0">
                         <small class="font-weight-bold">@item.UserName</small>&nbsp;&nbsp;<small class="text-secondary">@item.PostTime</small><br />
                         <span name="msg" style="white-space:pre-wrap">@Html.Raw(content.Replace("\n", "<br/>"))</span> @*@item.Content*@
                         @if (item.PictureId != null)
                         {
                             <br />
                             <img src="/Images/show/@item.PictureId" class="col-8 mt-1 pl-0" onclick="shadowBox(@item.PictureId);" /><br />
+                        }
+                    </div>
+                    <div>
+                        <!-- もうやだ -->
+                        @if (item.IsFav)
+                        {
+                            <span id="fav_@item.PostId"><i class="fas fa-star text-warning mr-1"></i><span class="small">@item.FavNum</span></span>
+                        }
+                        else
+                        {
+                            <span id="fav_@item.PostId"><i class="fas fa-star text-muted mr-1"></i><span class="small">@item.FavNum</span></span>
                         }
                     </div>
                 </dd>
@@ -183,7 +194,7 @@
             var chat = $.connection.chatHub;
 
             // がんばって受信する
-            chat.client.broadcastMessage = function (iconSrc, name, message, time, picId) {
+            chat.client.broadcastMessage = function (iconSrc, name, message, time, picId, id) {
                 // Html encode display name and message.
                 var encodedName = $('<div />').text(name).html();
                 //var encodedMsg = $('<div />').text(message).html();
@@ -194,7 +205,7 @@
                 //だぶるこーとだと一箇所しか置換されないの(´･ω･`)
                 var pendMsg = '<dd class="row mx-auto border-top pt-2">' +
                     '<div class="mt-2 ml-2 mr-1"><img src="' + iconSrc + '" height="33" width="33" class="p-0 rounded" /><br /></div>' +
-                    '<div class="col-10 mb-1">' +
+                    '<div class="col mb-1 mr-0">' +
                     '<small class="font-weight-bold">' + encodedName + '</small>&nbsp;&nbsp;' + '<small class="text-secondary">' + encodedTime + '</small><br />' +
                     '<span name="msg" style="white-space:pre-wrap">' + encodedMsg + '</span>';
 
@@ -202,7 +213,7 @@
                     pendMsg += '<br /><img src="/Images/show/' + picId + '" class="col-8 mt-1 pl-0" onclick="shadowBox(' + picId + ');" /><br />';
                 }
 
-                pendMsg += '</div></dd>';
+                pendMsg += '</div><div><span id="fav_' + id + '"><i class="fas fa-star text-muted mr-1"></i><span class="small">0</span></span></div></dd>';
 
                 $('#discussion').prepend(pendMsg);
 
@@ -224,6 +235,27 @@
                 console.log("broadcast できたよ name:" + name + " msg:" + message);
             };
 
+            //全体向け　ふぁぼ数を変更
+            chat.client.broadcastFav = function (postId, favnum) {
+                if (result) {
+                    var selecter = '#fav_' + postId;
+                    $(selecter).find('span').text(favnum);
+                    console.log(favnum);
+                }
+            };
+
+            //個人向けアイコン変更など
+            chat.client.broadcastUserFav = function (postId, result) {
+                if (result) {
+                    var selecter = '#fav_' + postId;
+                    //一瞬消してゆるっと再登場する　あにめーしょん分からん　たぶんもっといいやり方がある…
+                    $(selecter).find('[class^="fas"]').fadeToggle(1).toggleClass('text-muted').toggleClass('text-warning').fadeToggle(300);
+                }
+                else {
+                    $("#result").html('<p class="text-danger">ふぁぼれなかった…</p>');
+                }
+            };
+
             // Set initial focus to message input box.
             $('#message').focus();
 
@@ -242,6 +274,7 @@
                     }
                 });
 
+                //投稿する
                 $('#sendmessage').click(function () {
                     var message = $('#message').val();
                     var data = $('#lumonde').prop('files')[0];
@@ -280,7 +313,15 @@
                             })
                     }
                 });
+
+
+                //ふぁぼる
+                //動的な要素に対応するときはこう書くといいらしい
+                $('#discussion').on("click", "[id^='fav_']", function (e) {
+                    chat.server.sendFav(e.currentTarget.id);
+                });
             });
+
 
             //ローカル用　通知切替え
             $('#switchButton').on('click', function () {

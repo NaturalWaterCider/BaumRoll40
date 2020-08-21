@@ -13,11 +13,16 @@ namespace BaumRoll40.Models
 
         public int PageNo { get; set; }
 
+        public bool IsFav { get; set; }
+
+        public int? FavNum { get; set; }
+
         public Post()
         {
 
         }
 
+        //作成用
         public Post(string message, int postId, int userid, int? picId)
         {
             PostId = postId;
@@ -27,7 +32,8 @@ namespace BaumRoll40.Models
             PostTime = DateTime.Now;
         }
 
-        public Post(int postId, int userid, string username, string message, DateTime posttime, int? picId)
+        //検索用
+        public Post(int postId, int userid, string username, string message, DateTime posttime, int? picId, bool isFav, int? favNum)
         {
             PostId = postId;
             UserId = userid;
@@ -35,6 +41,8 @@ namespace BaumRoll40.Models
             Content = message;
             PictureId = picId;
             PostTime = posttime;
+            IsFav = isFav;
+            FavNum = favNum;
         }
     }
 

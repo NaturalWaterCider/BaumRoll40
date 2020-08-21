@@ -14,6 +14,14 @@
           <Property Name="Content" Type="nvarchar" MaxLength="500" />
           <Property Name="SendTime" Type="datetime" />
         </EntityType>
+        <EntityType Name="Fav">
+          <Key>
+            <PropertyRef Name="PostId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="PostId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Picture">
           <Key>
             <PropertyRef Name="PictureId" />
@@ -54,6 +62,7 @@
         </Association>
         <EntityContainer Name="BaumRollModelStoreContainer">
           <EntitySet Name="Claim" EntityType="Self.Claim" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Fav" EntityType="Self.Fav" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Picture" EntityType="Self.Picture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
@@ -95,6 +104,7 @@
             <End Role="Picture" EntitySet="Picture" />
             <End Role="Post" EntitySet="Post" />
           </AssociationSet>
+          <EntitySet Name="Fav" EntityType="BaumRollModel.Fav" />
         </EntityContainer>
         <EntityType Name="Claim">
           <Key>
@@ -125,6 +135,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Fav">
+          <Key>
+            <PropertyRef Name="PostId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="PostId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -167,6 +185,14 @@
               <MappingFragment StoreEntitySet="Picture">
                 <ScalarProperty Name="Picture1" ColumnName="Picture" />
                 <ScalarProperty Name="PictureId" ColumnName="PictureId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Fav">
+            <EntityTypeMapping TypeName="BaumRollModel.Fav">
+              <MappingFragment StoreEntitySet="Fav">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="PostId" ColumnName="PostId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

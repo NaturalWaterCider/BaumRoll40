@@ -18,6 +18,7 @@ namespace BaumRoll40.SignalR
     {
         private BaumRollEntities db = new BaumRollEntities();
 
+        //投稿する
         public void SendMessage(string name, string message, int? picId)
         {
             //picId偽装対策
@@ -28,11 +29,11 @@ namespace BaumRoll40.SignalR
 
             int userId = 0;
             //userIdを取得
-            if(int.TryParse(HttpContext.Current.User.Identity.Name, out userId))
+            if (int.TryParse(HttpContext.Current.User.Identity.Name, out userId))
             {
                 //なりすまし対策
                 var postUserId = db.Users.Where(u => u.UserName == name).Select(u => u.UserId).FirstOrDefault();
-                if(userId != postUserId)
+                if (userId != postUserId)
                 {
                     name = db.Users.Where(u => u.UserId == userId).Select(u => u.UserName).FirstOrDefault();
                 }
@@ -44,5 +45,35 @@ namespace BaumRoll40.SignalR
 
         }
 
+        //ふぁぼる
+        public void SendFav(string id)
+        {
+            int postId = 0;
+            if (int.TryParse(id.Substring(4), out postId))
+            {
+                var manageFav = new ManageFavModel();
+
+                if (manageFav.Fav(postId))
+                {
+                    //成功時
+                    var favnum = db.Fav.Where(f => f.PostId == postId).Count();
+                    var context = GlobalHost.ConnectionManager.GetHubContext<MyHub>();
+
+                    //変更したふぁぼ数 + ふぁぼれた旨を送信
+                    context.Clients.All.broadcastFav(postId, favnum);
+                    context.Clients.Client(Context.ConnectionId).broadcastUserFav(postId, true);
+                }
+                else
+                {
+                    //失敗時
+                    var favnum = db.Fav.Where(f => f.PostId == postId).Count();
+                    var context = GlobalHost.ConnectionManager.GetHubContext<MyHub>();
+
+                    //ふぁぼれなかった旨を送信
+                    context.Clients.Client(Context.ConnectionId).broadcastUserFav(postId, false);
+                }
+            }
+
+        }
     }
 }

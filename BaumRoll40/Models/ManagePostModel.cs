@@ -52,7 +52,7 @@ namespace BaumRoll40.Models
             {
                 db.SaveChanges();
 
-                context.Clients.All.broadcastMessage(iconSrc, name, message, post.PostTime.ToString("yyyy/MM/dd HH:mm:ss"), picId);
+                context.Clients.All.broadcastMessage(iconSrc, name, message, post.PostTime.ToString("yyyy/MM/dd HH:mm:ss"), picId, postId);
             }
             catch (Exception ex)
             {
@@ -132,7 +132,7 @@ namespace BaumRoll40.Models
 
 
         /// <summary>
-        /// 所持上限超えたPost(およびそれに紐づくPicture)をDBから削除する
+        /// 所持上限超えたPost(およびそれに紐づくPictureとFav)をDBから削除する
         /// </summary>
         private void RemoveOverPost()
         {
@@ -144,6 +144,8 @@ namespace BaumRoll40.Models
                 {
                     db.Picture.Remove(db.Picture.Find(minPost.PictureId));
                 }
+                var delfavs = db.Fav.Where(x => x.PostId == minPost.PostId).ToList();
+                db.Fav.RemoveRange(delfavs);
                 db.Post.Remove(minPost);
             }
         }
