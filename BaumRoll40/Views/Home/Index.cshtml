@@ -179,8 +179,34 @@
             $("li#signout").before('<li class="nav-item ml-2"><a class="nav-link" href="#" data-toggle="modal" data-target="#SearchModal">検索</a></li>');
         })
 
+
         //我ながらなんて読みづらいんだろうと思う
         $(function () {
+            $('#discussion').on("mouseover", "[id^='fav_']", function (e) {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Content("~/Home/GetFavUsers")',
+                    data: {
+                        id: e.target.id.substring(4)
+                    },
+                    dataType: 'text',
+                })
+                .done(function (data) {
+                    if (data) {
+                        //一度オプション指定してからの表示　DOM側にもオプションかけるけどうまく動かなんだ…
+                        $(e.target).tooltip('dispose').tooltip({
+                            placement: 'top',
+                            title: data,
+                        }).tooltip('show');
+                    }
+                    else {
+                        $(e.target).tooltip('dispose');
+                    }
+                })
+                .fail(function () {
+                })
+
+            });
             //simpleMDE
             //var simplemde = new SimpleMDE({
             //    element: document.getElementById("message"),
@@ -240,7 +266,6 @@
                 if (result) {
                     var selecter = '#fav_' + postId;
                     $(selecter).find('span').text(favnum);
-                    console.log(favnum);
                 }
             };
 

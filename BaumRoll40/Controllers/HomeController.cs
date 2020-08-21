@@ -205,5 +205,29 @@ namespace BaumRoll40.Controllers
             }
 
         }
+
+        /// <summary>
+        /// ふぁぼったのだれだ
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult GetFavUsers(string id)
+        {
+            var postId = 0;
+            if(int.TryParse(id, out postId))
+            {
+                var userlist = db.Fav.Where(x => x.PostId == postId).Select(x => x.UserId);
+                var userNameList = new List<string>();
+                userlist.ToList().ForEach(x =>
+                {
+                    var username = db.Users.Find(x)?.UserName;
+                    userNameList.Add(username);
+                });
+
+                return Content(string.Join(", ", userNameList));
+            }
+
+            return Content("");
+        }
     }
 }
