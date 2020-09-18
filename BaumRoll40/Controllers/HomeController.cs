@@ -33,32 +33,31 @@ namespace BaumRoll40.Controllers
 
             var quoti = model.PostList.Count / PAGE_1NUM;
             var remainder = model.PostList.Count % PAGE_1NUM;
-            int fromNo = 0;
-            int endNo = 0;
-            model.AllPageNo = quoti + 1;
+            model.AllPageNo = remainder == 0 ? quoti : quoti + 1;
 
-            //PostListの取得範囲決定
             if(iid < 1 || model.AllPageNo < iid)       //範囲外の数値
             {
-                endNo = PAGE_1NUM;
                 model.PageNo = 1;
                 ViewBag.ErrorMsg = string.Format("範囲外のページが指定されたため、1ページ目を表示しています。");
-                logger.Info("Home/Index 範囲外のページ指定 by" + model.UserName + " ぱらめた:" +id);
+                logger.Info("Home/Index 範囲外のページ指定 by" + model.UserName + " ぱらめた:" + id);
             }
-            else if(iid == model.AllPageNo)            //最後のページ
+            else
             {
-                fromNo = (iid - 1) * PAGE_1NUM ;
-                endNo = fromNo + remainder;
-                model.PageNo = iid;
-            }
-            else if(iid <= quoti)                //1～最後の1つ前のページ
-            {
-                fromNo = (iid - 1) * PAGE_1NUM;
-                endNo = fromNo + PAGE_1NUM;
                 model.PageNo = iid;
             }
 
-            model.PostList = model.PostList.GetRange(fromNo, endNo - fromNo);
+            //PostListの取得範囲決定
+            int fromNo = (model.PageNo - 1) * PAGE_1NUM;
+            if (model.PageNo != model.AllPageNo)    //1～最後の1つ前のページ
+            {
+                model.PostList = model.PostList.GetRange(fromNo, PAGE_1NUM);
+            }
+            else    //最後のページ
+            {
+                int count = remainder == 0 ? PAGE_1NUM : remainder;
+                model.PostList = model.PostList.GetRange(fromNo, count);
+            }
+
 
             return View(model);
         }
