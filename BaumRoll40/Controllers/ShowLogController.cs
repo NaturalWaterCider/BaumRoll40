@@ -41,12 +41,7 @@ namespace BaumRoll40.Controllers
                 return "指定日がおかしいですよ";
             }
 
-            string filePath = @"C:\inetpub\wwwroot\logs\";
-            if(date.Substring(5, 2) != DateTime.Now.Month.ToString("00"))
-            {
-                filePath += date.Substring(0, 7) + @"\";
-            }
-            filePath += date + ".log";
+            string filePath = Server.MapPath($"~/logs/{date.Substring(0, 7)}/{date}.log");
 
             if (System.IO.File.Exists(filePath))
             {
