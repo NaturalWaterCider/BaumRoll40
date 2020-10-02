@@ -45,13 +45,19 @@ namespace BaumRoll40.Controllers
 
             if (System.IO.File.Exists(filePath))
             {
-                StreamReader sr = new StreamReader(filePath, Encoding.GetEncoding("Shift_JIS"));
-
-                string str = sr.ReadToEnd();
-
-                sr.Close();
-
-                return str;
+                using (StreamReader sr = new StreamReader(filePath, Encoding.GetEncoding("Shift_JIS")))
+                {
+                    try
+                    {
+                        string str = sr.ReadToEnd();
+                        return str;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Error(e.Message);
+                        return "なにかあったらしいよ";
+                    }
+                }
             }
             else
             {

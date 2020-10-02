@@ -72,8 +72,9 @@ namespace BaumRoll40.Controllers
             try
             {
                 var allPostList = GetAllPostList();
-                allPostList = allPostList.Where(p => !string.IsNullOrEmpty(p.Content)).ToList();
-                var allpageNo = allPostList.Count() / PAGE_1NUM + 1;
+                var allPostNum = allPostList.Count;
+                var remainder = allPostNum % PAGE_1NUM;
+                var allpageNo = remainder == 0 ? allPostNum / PAGE_1NUM : allPostNum / PAGE_1NUM + 1;
 
                 //検索
                 //こんなこまごまやらんでも
@@ -84,7 +85,7 @@ namespace BaumRoll40.Controllers
                 //    CompareOptions.IgnoreSymbols; // 空白文字・句読点・その他の記号を無視
                 //var searchedList = from p in allPostList where 0 <= curComp.IndexOf(p.Content, model.SearchWord, cmpOption) select p;
                 //model.SearchedPostList = searchedList.ToList();
-                model.SearchedPostList = allPostList.Where(x => x.Content.Contains(model.SearchWord)).ToList();
+                model.SearchedPostList = allPostList.Where(x => !string.IsNullOrEmpty(x.Content) && x.Content.Contains(model.SearchWord)).ToList();
                 model.SearchedPostList.ForEach(s => { s.PageNo = GetPageNo(s.PostId, allpageNo); });
 
             }
@@ -115,6 +116,7 @@ namespace BaumRoll40.Controllers
                         //左外部結合もどき
                         join fcc in (from fc in db.Fav group fc by fc.PostId into g select new { PostId = g.Key, FavCount = g.Count().ToString() }) on p.PostId equals fcc.PostId into fccJoin
                         from fj in fccJoin.DefaultIfEmpty()
+                        orderby p.PostTime descending
                         select new
                         {
                             p.PostId,
@@ -128,13 +130,13 @@ namespace BaumRoll40.Controllers
                         };
 
             var list = new List<Post>();
-            query.ToList().ForEach(item =>
+            foreach(var item in query)
             {
                 Post post = new Post(item.PostId,item.UserId, item.UserName, item.Content, item.PostTime, item.PictureId, item.isfav, int.Parse(item.FavCount));
                 list.Add(post);
-            });
+            }
 
-            return list.OrderByDescending(p => p.PostTime).ToList();
+            return list;
         }
 
         /// <summary>
@@ -215,15 +217,9 @@ namespace BaumRoll40.Controllers
             var postId = 0;
             if(int.TryParse(id, out postId))
             {
-                var userlist = db.Fav.Where(x => x.PostId == postId).Select(x => x.UserId);
-                var userNameList = new List<string>();
-                userlist.ToList().ForEach(x =>
-                {
-                    var username = db.Users.Find(x)?.UserName;
-                    userNameList.Add(username);
-                });
-
-                return Content(string.Join(", ", userNameList));
+                //Userがぬるぬるしないことを願っているよ
+                return Content(string.Join(", ", db.Fav.Where(x => x.PostId == postId)
+                    .Select(x => db.Users.Where(y => y.UserId == x.UserId).Select(y => y.UserName).FirstOrDefault())));
             }
 
             return Content("");

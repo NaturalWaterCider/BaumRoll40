@@ -144,7 +144,7 @@ namespace BaumRoll40.Models
                 {
                     db.Picture.Remove(db.Picture.Find(minPost.PictureId));
                 }
-                var delfavs = db.Fav.Where(x => x.PostId == minPost.PostId).ToList();
+                var delfavs = db.Fav.Where(x => x.PostId == minPost.PostId);
                 db.Fav.RemoveRange(delfavs);
                 db.Post.Remove(minPost);
             }

@@ -31,17 +31,7 @@ namespace BaumRoll40.Controllers
             try
             {
                 DateTime dateTime = (!string.IsNullOrEmpty(date)) ? DateTime.Parse(date) : DateTime.Now;
-
-                db.Post.Where(p => p.PostTime.CompareTo(dateTime) >= 0).ToList().ForEach(p => {
-                    if (string.IsNullOrEmpty(res))
-                    {
-                        res += p.Content;
-                    }
-                    else
-                    {
-                        res += ", " + p.Content;
-                    }
-                });
+                return string.Join(", ", db.Post.Where(p => p.PostTime.CompareTo(dateTime) >= 0).Select(p => p.Content));
 
             }
             catch (Exception e)
@@ -49,8 +39,6 @@ namespace BaumRoll40.Controllers
                 res = "ばーか";
                 return res;
             }
-            return res;
-
         }
 
         // PUT api/<controller>/5
