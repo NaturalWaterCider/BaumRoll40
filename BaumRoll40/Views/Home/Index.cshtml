@@ -413,12 +413,12 @@
 
         //aタグ作るよ！(｀・ω・´)
         function makeLinkTag($1) {
-            if ($1.match(document.domain)) {
-                // ドメインが同じ場合は同じウィンドウ
-                return '<a href="' + $1 + '">' + decodeURI($1) + '</a>';
-            } else {
+            try {
                 // ドメインが異なる場合は別ウィンドウ
                 return '<a href="' + $1 + '" target="_blank">' + decodeURI($1) + '</a>';
+            }
+            catch (e) {
+                return '<span class="text-danger"> えらー：URLの変換に失敗しました </span>';
             }
         }
 
