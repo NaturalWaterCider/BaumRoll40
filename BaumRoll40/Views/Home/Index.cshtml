@@ -25,7 +25,7 @@
         @* 投稿送信 *@
         <div class="form-inline ml-1 mb-3">
             <div class="form-group col-10">
-                <textarea id="message" class="form-control col" maxlength="200" rows="3"></textarea>
+                <textarea id="message" class="form-control col" rows="3"></textarea>
             </div>
             <input type="button" id="sendmessage" value="送信" class="btn btn-primary ml-2" />
         </div>
@@ -158,8 +158,11 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.7/push.min.js"></script>
     <script type="text/javascript">
 
+        //デコード用
         //末尾に[\w\-_@@/~?%$&=+#]を入れるべきか迷う
         const httpRegExp = /(https?:\/\/[\w.\-_@@:/~?%$&;=+#',()*!]+[\w\-_@@/~?%$&=+()#])/g;
+        //エンコード用　ざっくりタグとスペース以外(ざっくり)
+        const deHttpRegExp = /(https?:\/\/[^>^<^ ^　]+)/g;
 
         //通知　有無の設定をするんだと思う
         //実際の通知作成は鯖らんどで
@@ -226,7 +229,9 @@
                 //var encodedMsg = $('<div />').text(message).html();
                 var encodedTime = $('<div />').text(time).html();
 
-                var encodedMsg = $('<div />').text(message).html().replace(httpRegExp, makeLinkTag);
+                //デコードされて登録されたURLを一旦エンコードしてまたデコードする
+                var encodedMsg = $('<div />').text(message).html().replace(deHttpRegExp, encodeURI);
+                encodedMsg = encodedMsg.replace(httpRegExp, makeLinkTag);
                 // Add the message to the page.
                 //だぶるこーとだと一箇所しか置換されないの(´･ω･`)
                 var pendMsg = '<dd class="row mx-auto border-top pt-2">' +
@@ -292,9 +297,14 @@
                     if (event.ctrlKey) {
                         //押されたキー（e.keyCode）が13（Enter）か　そしてテキストエリアに何かが入力されているか判定
                         if (e.keyCode === 13) {
-                            //フォームを送信
-                            $("#sendmessage").trigger("click");
-                            $('#message').val('').focus();
+
+                            //デコード&文字数チェック
+                            var isMsgChecked = checkMsgLength();
+                            if (isMsgChecked == true) {
+                                //フォームを送信
+                                $("#sendmessage").trigger("click");
+                                $('#message').val('').focus();
+                            }
                         }
                     }
                 });
@@ -395,26 +405,53 @@
                     })
                     .done(function (data) {
                         $('#SearchResult').html(data);
-                        $('#searchList').html($('#searchList').html().replace(httpRegExp, makeLinkTag));
+                        //デコードされて登録されたURLを一旦エンコードしてまたデコードする
+                        var tepHtml = $('#searchList').html().replace(deHttpRegExp, encodeURI);
+                        $('#searchList').html(tepHtml.replace(httpRegExp, makeLinkTag));
                     })
                     .fail(function () {
                         $('#SearchResult').html('<p class="ml-3">エラーです　管理者に教えてあげると喜びます　</p>');
                     })
                 }
             });
+
+            //デコードした上で文字数超えないかチェック
+            $('#message').on('change', checkMsgLength);
         });
+
+        //URLデコードした上で文字数チェック
+        function checkMsgLength() {
+            console.log($('#message').val());
+            var str = $('#message').val().replace(httpRegExp, decodeURI);
+            $('#message').val(str);
+
+            if (str.length > 200) {
+                $('#sendmessage').prop('disabled', true);
+                $("#result").html('<p class="text-danger">200文字以下にしてね！</p>');
+
+                return false;
+            }
+            else {
+                $('#sendmessage').prop('disabled', false);
+                $("#result").html('');
+
+                return true;
+            }
+        }
 
         //自動リンク化
         $(function() {
             var str;
-            str = $('#discussion').html().replace(httpRegExp, makeLinkTag);
+            //デコードされて登録されたURLを一旦エンコードしてまたデコードする
+            str = $('#discussion').html().replace(deHttpRegExp, encodeURI);
+            str = str.replace(httpRegExp, makeLinkTag);
             $('#discussion').html(str);
         });
 
         //aタグ作るよ！(｀・ω・´)
         function makeLinkTag($1) {
             try {
-                // ドメインが異なる場合は別ウィンドウ
+                // 別ウィンドウでひらく
                 return '<a href="' + $1 + '" target="_blank">' + decodeURI($1) + '</a>';
             }
             catch (e) {
