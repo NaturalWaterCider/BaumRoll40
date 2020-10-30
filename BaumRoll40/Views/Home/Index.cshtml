@@ -421,7 +421,6 @@
 
         //URLデコードした上で文字数チェック
         function checkMsgLength() {
-            console.log($('#message').val());
             var str = $('#message').val().replace(httpRegExp, decodeURI);
             $('#message').val(str);
 
