@@ -62,24 +62,25 @@
                         }
                     </div>
                     <div class="col mb-1 mr-0">
-                        <small class="font-weight-bold">@item.UserName</small>&nbsp;&nbsp;<small class="text-secondary">@item.PostTime</small><br />
+                        <small class="font-weight-bold">@item.UserName</small>&nbsp;&nbsp;<small class="text-secondary">@item.PostTime</small>
+                        @*<span><i class="fas fa-reply text-muted ml-1 small"></i></span>*@
+                        <!-- もうやだ -->
+                        @if (item.IsFav)
+                        {
+                            <span id="fav_@item.PostId"><i class="fas fa-star text-warning mx-1 small"></i><span class="small">@item.FavNum</span></span>
+                        }
+                        else
+                        {
+                            <span id="fav_@item.PostId"><i class="fas fa-star text-muted mx-1 small"></i><span class="small">@item.FavNum</span></span>
+                        }
+                        <br />
                         <span name="msg" style="white-space:pre-wrap">@Html.Raw(content.Replace("\n", "<br/>"))</span> @*@item.Content*@
                         @if (item.PictureId != null)
                         {
                             <br />
                             <img src="/Images/show/@item.PictureId" class="col-8 mt-1 pl-0" onclick="shadowBox(@item.PictureId);" /><br />
                         }
-                    </div>
-                    <div>
-                        <!-- もうやだ -->
-                        @if (item.IsFav)
-                        {
-                            <span id="fav_@item.PostId"><i class="fas fa-star text-warning mr-1"></i><span class="small">@item.FavNum</span></span>
-                        }
-                        else
-                        {
-                            <span id="fav_@item.PostId"><i class="fas fa-star text-muted mr-1"></i><span class="small">@item.FavNum</span></span>
-                        }
+                        <br />
                     </div>
                 </dd>
             }
@@ -230,21 +231,24 @@
                 var encodedTime = $('<div />').text(time).html();
 
                 //デコードされて登録されたURLを一旦エンコードしてまたデコードする
-                var encodedMsg = $('<div />').text(message).html().replace(deHttpRegExp, encodeURI);
+                var encodedMsg = $('<div />').text(message).html().replace(/\n|\r\n|\r/g, "<br />").replace(deHttpRegExp, encodeURI);
                 encodedMsg = encodedMsg.replace(httpRegExp, makeLinkTag);
+                encodedMsg = encodedMsg.replace(/'''[\s\S]+?'''/g, convertCode);
+
                 // Add the message to the page.
                 //だぶるこーとだと一箇所しか置換されないの(´･ω･`)
                 var pendMsg = '<dd class="row mx-auto border-top pt-2">' +
                     '<div class="mt-2 ml-2 mr-1"><img src="' + iconSrc + '" height="33" width="33" class="p-0 rounded" /><br /></div>' +
                     '<div class="col mb-1 mr-0">' +
-                    '<small class="font-weight-bold">' + encodedName + '</small>&nbsp;&nbsp;' + '<small class="text-secondary">' + encodedTime + '</small><br />' +
+                    '<small class="font-weight-bold">' + encodedName + '</small>&nbsp;&nbsp;' + '<small class="text-secondary">' + encodedTime + '</small>' +
+                    '<span id="fav_' + id + '"><i class="fas fa-star text-muted mx-1 small"></i><span class="small">0</span></span>' + '<br />' +
                     '<span name="msg" style="white-space:pre-wrap">' + encodedMsg + '</span>';
 
                 if (picId != null && picId >= 1) {
                     pendMsg += '<br /><img src="/Images/show/' + picId + '" class="col-8 mt-1 pl-0" onclick="shadowBox(' + picId + ');" /><br />';
                 }
 
-                pendMsg += '</div><div><span id="fav_' + id + '"><i class="fas fa-star text-muted mr-1"></i><span class="small">0</span></span></div></dd>';
+                pendMsg += '</div></dd>';
 
                 $('#discussion').prepend(pendMsg);
 
@@ -336,6 +340,7 @@
                                 $('#message').val('').focus();
                                 $('#outputLumonde').html("");
                                 $('#preview').attr('src', '');
+                                $('#preview').css('display', 'none');
 
                                 //$('#results').prepend('<img src="/images/show/' + o + '">');
                             })
@@ -444,6 +449,9 @@
             //デコードされて登録されたURLを一旦エンコードしてまたデコードする
             str = $('#discussion').html().replace(deHttpRegExp, encodeURI);
             str = str.replace(httpRegExp, makeLinkTag);
+            //?は最小まっち　大事
+            str = str.replace(/'''[\s\S]+?'''/g, convertCode);
+
             $('#discussion').html(str);
         });
 
@@ -458,6 +466,11 @@
             }
         }
 
+        //コードの表示をするよ(｀・ω・´)
+        function convertCode(str) {
+            return "<pre class='bg-light rounded p-2'><code>" + str.substring(3, str.length - 3) + "</code></pre>";
+        }
+
         $('#lumonde').on('change', function () {
             $('#outputLumonde').html($(this)[0].files[0].name + '<button type="button" class="btn btn-sm btn-secondary ml-1" id="cancelFile" onclick="cancelFileUpload()">取消</button>');
         })
@@ -466,6 +479,7 @@
             $('#lumonde').val(null);
             $('#outputLumonde').html('');
             $('#preview').attr('src', '');
+            $('#preview').css('display', 'none');
         }
 
         //画像拡大
