@@ -90,7 +90,7 @@ namespace BaumRoll40.Controllers
                 if (iconFile != null && iconFile.ContentType != "" && iconFile.ContentType.Contains("image/"))
                 {
                     //ファイルアップロード
-                    var upIconFilePath = ConfigurationManager.AppSettings["iconFolder"] + "\\" + User.Identity.Name + ".png";
+                    var upIconFilePath = Server.MapPath($"~/Content/Icon/{User.Identity.Name}.png");
                     iconFile.SaveAs(upIconFilePath);
                     HttpResponse.RemoveOutputCacheItem("/Home/Index/");
                     ViewBag.ResultMsg = string.Format("アイコン画像が登録できた！よ！");
