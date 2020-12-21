@@ -22,20 +22,20 @@ namespace BaumRoll40.Models
 
         public void PushNotification(string userId)
         {
-            WebProxy proxyObject = new WebProxy("http://proxy.nssys.co.jp:8080/", true);
+            //WebProxy proxyObject = new WebProxy("http://proxy.nssys.co.jp:8080/", true);
             var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
-            request.Proxy = proxyObject;
+            //request.Proxy = proxyObject;
 
             request.KeepAlive = true;
             request.Method = "POST";
             request.ContentType = "application/json; charset=utf-8";
 
-            request.Headers.Add("authorization", "Basic MjA1YmQ5OGQtNzdjMy00MWRmLTg1NDctNjA0YzM3YTI2MTI1");
+            request.Headers.Add("authorization", "Basic OGRiNjAwN2QtMTcyMi00ZDFlLThlZDQtY2JmMThkODI0MmY1");
 
             var serializer = new JavaScriptSerializer();
             var obj = new
             {
-                app_id = "0d1aeef6-4c31-438b-9b18-b2fcf9fd9b8c",
+                app_id = "916de59c-4af9-4c5e-b1ac-8f31f2f57d7c",
                 headings = new { en = " ", ja = "　"},
                 contents = new { en = "English language content is required…", ja = "　" },
                 included_segments = new string[] { "All" },

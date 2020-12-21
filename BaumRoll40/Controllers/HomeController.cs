@@ -48,15 +48,16 @@ namespace BaumRoll40.Controllers
 
             //PostListの取得範囲決定
             int fromNo = (model.PageNo - 1) * PAGE_1NUM;
-            if (model.PageNo != model.AllPageNo)    //1～最後の1つ前のページ
-            {
-                model.PostList = model.PostList.GetRange(fromNo, PAGE_1NUM);
-            }
-            else    //最後のページ
+            if (model.PageNo == model.AllPageNo)    //最後のページ
             {
                 int count = remainder == 0 ? PAGE_1NUM : remainder;
                 model.PostList = model.PostList.GetRange(fromNo, count);
             }
+            else if(model.AllPageNo != 0)    //2～最後の1つ前のページ
+            {
+                model.PostList = model.PostList.GetRange(fromNo, PAGE_1NUM);
+            }
+            //最初のページの場合は絞込いらない
 
 
             return View(model);

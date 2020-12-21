@@ -88,7 +88,6 @@ namespace BaumRoll40.Controllers
             var xForwardedFor = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
             if (String.IsNullOrEmpty(xForwardedFor) == false)
             {
-                logger.Info("てすと " + xForwardedFor.ToString());
                 clientIp = xForwardedFor.Split(',').GetValue(0).ToString().Trim();
             }
             else
