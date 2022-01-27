@@ -5,6 +5,23 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="BaumRollModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Blog">
+          <Key>
+            <PropertyRef Name="BlogId" />
+          </Key>
+          <Property Name="BlogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="30" />
+          <Property Name="Content" Type="nvarchar" MaxLength="1000" />
+          <Property Name="CreateDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="BlogTag">
+          <Key>
+            <PropertyRef Name="BlogId" />
+            <PropertyRef Name="TagId" />
+          </Key>
+          <Property Name="BlogId" Type="int" Nullable="false" />
+          <Property Name="TagId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Claim">
           <Key>
             <PropertyRef Name="ClaimId" />
@@ -39,6 +56,13 @@
           <Property Name="PictureId" Type="int" />
           <Property Name="PostTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Tag">
+          <Key>
+            <PropertyRef Name="TagId" />
+          </Key>
+          <Property Name="TagId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TagName" Type="nvarchar" MaxLength="20" />
+        </EntityType>
         <EntityType Name="Users">
           <Key>
             <PropertyRef Name="UserId" />
@@ -48,6 +72,30 @@
           <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="DarkFlag" Type="bit" Nullable="false" />
         </EntityType>
+        <Association Name="FK_BlogTag_Blog">
+          <End Role="Blog" Type="Self.Blog" Multiplicity="1" />
+          <End Role="BlogTag" Type="Self.BlogTag" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Blog">
+              <PropertyRef Name="BlogId" />
+            </Principal>
+            <Dependent Role="BlogTag">
+              <PropertyRef Name="BlogId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BlogTag_Tag">
+          <End Role="Tag" Type="Self.Tag" Multiplicity="1" />
+          <End Role="BlogTag" Type="Self.BlogTag" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tag">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="BlogTag">
+              <PropertyRef Name="TagId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Post_Picture">
           <End Role="Picture" Type="Self.Picture" Multiplicity="0..1" />
           <End Role="Post" Type="Self.Post" Multiplicity="*" />
@@ -61,11 +109,22 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="BaumRollModelStoreContainer">
+          <EntitySet Name="Blog" EntityType="Self.Blog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BlogTag" EntityType="Self.BlogTag" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Claim" EntityType="Self.Claim" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Fav" EntityType="Self.Fav" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Picture" EntityType="Self.Picture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Post" EntityType="Self.Post" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tag" EntityType="Self.Tag" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_BlogTag_Blog" Association="Self.FK_BlogTag_Blog">
+            <End Role="Blog" EntitySet="Blog" />
+            <End Role="BlogTag" EntitySet="BlogTag" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BlogTag_Tag" Association="Self.FK_BlogTag_Tag">
+            <End Role="Tag" EntitySet="Tag" />
+            <End Role="BlogTag" EntitySet="BlogTag" />
+          </AssociationSet>
           <AssociationSet Name="FK_Post_Picture" Association="Self.FK_Post_Picture">
             <End Role="Picture" EntitySet="Picture" />
             <End Role="Post" EntitySet="Post" />
@@ -105,6 +164,12 @@
             <End Role="Post" EntitySet="Post" />
           </AssociationSet>
           <EntitySet Name="Fav" EntityType="BaumRollModel.Fav" />
+          <EntitySet Name="Blog" EntityType="BaumRollModel.Blog" />
+          <EntitySet Name="Tag" EntityType="BaumRollModel.Tag" />
+          <AssociationSet Name="BlogTag" Association="BaumRollModel.BlogTag">
+            <End Role="Blog" EntitySet="Blog" />
+            <End Role="Tag" EntitySet="Tag" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Claim">
           <Key>
@@ -143,6 +208,28 @@
           <Property Name="PostId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
         </EntityType>
+        <EntityType Name="Blog">
+          <Key>
+            <PropertyRef Name="BlogId" />
+          </Key>
+          <Property Name="BlogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="Content" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Tag" Relationship="BaumRollModel.BlogTag" FromRole="Blog" ToRole="Tag" />
+        </EntityType>
+        <EntityType Name="Tag">
+          <Key>
+            <PropertyRef Name="TagId" />
+          </Key>
+          <Property Name="TagId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TagName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Blog" Relationship="BaumRollModel.BlogTag" FromRole="Tag" ToRole="Blog" />
+        </EntityType>
+        <Association Name="BlogTag">
+          <End Type="BaumRollModel.Blog" Role="Blog" Multiplicity="*" />
+          <End Type="BaumRollModel.Tag" Role="Tag" Multiplicity="*" />
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -196,6 +283,32 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Blog">
+            <EntityTypeMapping TypeName="BaumRollModel.Blog">
+              <MappingFragment StoreEntitySet="Blog">
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="BlogId" ColumnName="BlogId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tag">
+            <EntityTypeMapping TypeName="BaumRollModel.Tag">
+              <MappingFragment StoreEntitySet="Tag">
+                <ScalarProperty Name="TagName" ColumnName="TagName" />
+                <ScalarProperty Name="TagId" ColumnName="TagId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="BlogTag" TypeName="BaumRollModel.BlogTag" StoreEntitySet="BlogTag">
+            <EndProperty Name="Tag">
+              <ScalarProperty Name="TagId" ColumnName="TagId" />
+            </EndProperty>
+            <EndProperty Name="Blog">
+              <ScalarProperty Name="BlogId" ColumnName="BlogId" />
+            </EndProperty>
+          </AssociationSetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

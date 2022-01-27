@@ -409,6 +409,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BauRolls.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Blog.cs">
+      <DependentUpon>BauRolls.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Claim.cs">
       <DependentUpon>BauRolls.tt</DependentUpon>
     </Compile>
@@ -433,6 +436,9 @@
     <Compile Include="Models\PostViewModel.cs" />
     <Compile Include="Models\SearchViewModel.cs" />
     <Compile Include="Models\ShowLogViewModel.cs" />
+    <Compile Include="Models\Tag.cs">
+      <DependentUpon>BauRolls.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Users.cs">
       <DependentUpon>BauRolls.tt</DependentUpon>
     </Compile>

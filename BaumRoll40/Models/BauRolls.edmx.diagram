@@ -11,6 +11,9 @@
         <EntityTypeShape EntityType="BaumRollModel.Picture" Width="1.5" PointX="0.75" PointY="7" />
         <AssociationConnector Association="BaumRollModel.FK_Post_Picture" />
         <EntityTypeShape EntityType="BaumRollModel.Fav" Width="1.5" PointX="3.375" PointY="3.75" />
+        <EntityTypeShape EntityType="BaumRollModel.Blog" Width="1.5" PointX="5.375" PointY="0.875" />
+        <EntityTypeShape EntityType="BaumRollModel.Tag" Width="1.5" PointX="7.625" PointY="1.125" />
+        <AssociationConnector Association="BaumRollModel.BlogTag" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

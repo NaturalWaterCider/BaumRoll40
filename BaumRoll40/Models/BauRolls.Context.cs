@@ -30,5 +30,7 @@ namespace BaumRoll40.Models
         public virtual DbSet<Claim> Claim { get; set; }
         public virtual DbSet<Picture> Picture { get; set; }
         public virtual DbSet<Fav> Fav { get; set; }
+        public virtual DbSet<Blog> Blog { get; set; }
+        public virtual DbSet<Tag> Tag { get; set; }
     }
 }
