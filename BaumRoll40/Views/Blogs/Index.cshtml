@@ -1,0 +1,43 @@
+﻿@model IEnumerable<BaumRoll40.Models.Blog>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="container">
+    <h3>Pitta</h3>
+    <hr />
+    @if (User.Identity.IsAuthenticated && User.Identity.Name == "4280")
+    {
+        <p>
+            @Html.ActionLink("つくる", "Create")
+        </p>
+    }
+    @foreach (var item in Model.Reverse())
+    {
+        <div class="card mx-auto my-3">
+            <div class="card-body">
+                <h5 class="card-title text-info">@Html.ActionLink(item.Title, "Details", new { id = item.BlogId })</h5>
+                <p class="card-text">
+                    @{
+                        var content = item.Content;
+                        var maxNum = 30;
+                        if (content.Length > maxNum)
+                        {
+                            content = item.Content.Substring(0, maxNum) + "...";
+                        }
+                    }
+                    @content
+                </p>
+                @if (User.Identity.IsAuthenticated && User.Identity.Name == "4280")
+                {
+                    @Html.ActionLink("へんしゅう", "Edit", new { id = item.BlogId })
+                }
+            </div>
+        </div>
+
+    }
+    @Html.ActionLink("もどる", "Index", new { Controller = "Home", id = 1 })
+
+</div>
+

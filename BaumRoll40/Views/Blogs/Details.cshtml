@@ -1,0 +1,26 @@
+﻿@model BaumRoll40.Models.Blog
+
+@{
+    ViewBag.Title = "Details";
+}
+<div class="container">
+
+
+    <div>
+        <h3>@Html.DisplayFor(model => model.Title)</h3>
+        <p class="text-muted small">@Html.DisplayFor(model => model.CreateDate)</p>
+        <hr />
+
+        @{
+            string content = "";
+            if (!string.IsNullOrEmpty(Model.Content))
+            {
+                content = HttpUtility.HtmlEncode(Model.Content);
+            }
+        }
+        @Html.Raw(content.Replace("\n", "<br/>"))
+    </div>
+    <p>
+        @Html.ActionLink("一覧へ戻る", "Index")
+    </p>
+</div>

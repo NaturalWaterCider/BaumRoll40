@@ -155,8 +155,8 @@
 
     @*<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
     <script src="~/Scripts/marked.js"></script>*@
-    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.7/push.min.js"></script>
+    @*<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>*@
+    @*<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.7/push.min.js"></script>*@
     <script type="text/javascript">
 
         //デコード用
@@ -167,16 +167,16 @@
 
         //通知　有無の設定をするんだと思う
         //実際の通知作成は鯖らんどで
-        var OneSignal = window.OneSignal || [];
-        OneSignal.push(function () {
-            OneSignal.init({
-                appId: "0d1aeef6-4c31-438b-9b18-b2fcf9fd9b8c",
-                notifyButton: {
-                    enable: true,
-                },
-            });
-        });
-        OneSignal.push(['sendTag', 'customId', @User.Identity.Name, function (tagsSent) { }]); // ここ追加
+        //var OneSignal = window.OneSignal || [];
+        //OneSignal.push(function () {
+        //    OneSignal.init({
+        //        appId: "0d1aeef6-4c31-438b-9b18-b2fcf9fd9b8c",
+        //        notifyButton: {
+        //            enable: true,
+        //        },
+        //    });
+        //});
+        ///OneSignal.push(['sendTag', 'customId', @User.Identity.Name, function (tagsSent) { }]); // ここ追加
 
         //おいしくなって新登場
         $(function () {
