@@ -260,10 +260,11 @@
                     //通知がONの時は通知を送信する
                     if (pushflag == "1") {
                         //Push.js(自分用)
-                        Push.create("", {
-                            body: " ",
-                        });
+                        //Push.create("", {
+                        //    body: " ",
+                        //});
 
+                        notify("通知だよ");
                     }
                 }
 
@@ -541,6 +542,46 @@
             // ファイルの読み込み(Data URI Schemeの取得)
             fileReader.readAsDataURL(file); //画像表示
         }
+
+        function notify(msg, options = {}) {
+            if (window.Notification) {
+                console.log('Notificationは有効です');
+
+                // Permissionの確認
+                if (Notification.permission === 'granted') {
+
+                    // 許可されている場合はNotificationで通知
+                    console.log('通知許可されています');
+                    var n = new Notification(msg);
+
+                } else if (Notification.permission === 'denied') {
+
+                    console.log('通知拒否されています');
+
+                } else if (Notification.permission === 'default') {
+
+                    console.log('通知可能か不明です');
+
+                    // 許可が取れていない場合はNotificationの許可を取る
+                    Notification.requestPermission(function (result) {
+                        if (result === 'denied') {
+
+                            console.log('リクエスト結果：通知許可されませんでした');
+
+                        } else if (result === 'default') {
+
+                            console.log('リクエスト結果：通知可能か不明です');
+
+                        } else if (result === 'granted') {
+
+                            console.log('リクエスト結果：通知許可されました！！');
+                            var n = new Notification(msg);
+                        }
+                    })
+                }
+            } else {
+                console.log('Notificationは無効です');
+            }        }
     </script>
 
 }

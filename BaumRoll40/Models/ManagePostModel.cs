@@ -1,5 +1,6 @@
 ﻿using BaumRoll40.SignalR;
 using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -27,12 +28,9 @@ namespace BaumRoll40.Models
         /// <param name="name"></param>
         /// <param name="message"></param>
         /// <param name="picId"></param>
-        public void ReceiveMessage(int userId, string name, string message, int? picId)
+        public void ReceiveMessage(int userId, string name, string postmessage, int? picId)
         {
-            if(message.Length > 200)
-            {
-                message = "[懺悔] 私は200文字を超えて投稿しようとしました。";
-            }
+            var message = CheckMessageLength(postmessage);
 
             var iconSrc = "/Content/Icon/" + userId + ".png";
             if (!System.IO.File.Exists(HttpContext.Current.Server.MapPath(iconSrc)))
@@ -99,11 +97,13 @@ namespace BaumRoll40.Models
                         return;
                     }
 
+                    AImessage = CheckMessageLength(AImessage);
+
                 }
                 catch (Exception ex)
                 {
                     logger.Error("APIとの通信中にエラー ： " + ex + "\\n内部例外： " + ex.InnerException);
-                    AImessage = "[ERROR] APIとの通信中にエラーが発生しました。";
+                    AImessage = "[ERROR] お昼寝中…( ˘ω˘)ｽﾔｧ";
                 }
 
                 //postIdは直前に指定しないと同時更新エラー吐きがち
@@ -128,6 +128,17 @@ namespace BaumRoll40.Models
             //OneSignalで通知送れないかなー
             Notificator notificator = new Notificator();
             notificator.PushNotification(userId.ToString());
+        }
+
+        /// <summary>
+        /// 文字数チェック
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private static string CheckMessageLength(string message)
+        {
+            var newmessage = message.Length > 200 ? "[懺悔] 私は200文字を超えて投稿しようとしました。" : message;
+            return newmessage;
         }
 
 
@@ -158,7 +169,7 @@ namespace BaumRoll40.Models
         /// <returns></returns>
         private string TalkWithAI(string message, string AIname)
         {
-            string postData = message.Replace("@" + AIname + " ", "");
+            string postData = JsonConvert.SerializeObject(message.Replace("@" + AIname + " ", ""));
             string url = (AIname == choco) ? ConfigurationManager.AppSettings["wAddress"] : ConfigurationManager.AppSettings["tAddress"] + AIname;
 
             //POST送信する文字列を作成
@@ -172,7 +183,7 @@ namespace BaumRoll40.Models
                 System.Net.WebRequest.Create(url);
             req.Proxy = proxyObject;
             req.Method = "POST";
-            req.ContentType = "text/plain";
+            req.ContentType = "application/json";
 
             //データをPOST送信するためのStreamを取得
             System.IO.Stream reqStream = req.GetRequestStream();
